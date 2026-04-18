@@ -24,16 +24,6 @@ endif()
 
 add_subdirectory("${OHMFLUX_DIR}" "${CMAKE_BINARY_DIR}/ohmFlux_build")
 
-# 3. Macro access
-# If the macro is defined inside the engine's CMakeLists.txt,
-# add_subdirectory already loaded it. You don't need to include it again.
-# If it's in a separate file, include only that specific .cmake file:
-# include("/opt/OhmFlux/cmake/my_macros.cmake")
-
-# 4. Use the macro
-# Ensure the source files (main.cpp) exist in the current directory
-configure_project_target(OhmFluxTicTac "${CMAKE_CURRENT_SOURCE_DIR}/" "assets/" src/main.cpp)
-
 
 # --- IronTuner ---
 option(BUILD_IRONTUNER "Build IronTuner" ON)
@@ -98,7 +88,7 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
 
 		FetchContent_Declare(
 			curl
-			URL "${CMAKE_CURRENT_LIST_DIR}/lib/curl-curl-8_19_0.tar.gz"
+			URL "${OHMFLUX_DIR}/lib/curl-curl-8_19_0.tar.gz"
 			DOWNLOAD_EXTRACT_TIMESTAMP FALSE
 		)
 		FetchContent_MakeAvailable(curl)
@@ -149,7 +139,7 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
         "${IRONTUNER_DIR}/src/fluxRadio/StreamInfo.h"
         "${IRONTUNER_DIR}/src/fluxRadio/StreamInfo.cpp"
     )
-    configure_demo_target(IronTuner ${IRONTUNER_DIR} "${IRONTUNER_DIR}/assets@assets" "${IRONTUNER_SOURCES}" ${RES_FILES})
+    configure_project_target(IronTuner ${IRONTUNER_DIR} "${IRONTUNER_DIR}/assets@assets" "${IRONTUNER_SOURCES}" ${RES_FILES})
 
 elseif(BUILD_IRONTUNER)
     message(WARNING "CURL: EMSCRIPTEN BUILD IS NOT FIXED SO FAR!!")
