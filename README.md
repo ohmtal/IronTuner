@@ -1,6 +1,6 @@
 # IronTuner
 
-## Current Status: WiP - Carousel View and Redesign  
+## Current Status: pre release
 
 --- 
 
