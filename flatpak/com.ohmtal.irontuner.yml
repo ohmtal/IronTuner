@@ -35,14 +35,7 @@ modules:
 
 
   # OhmFlux
-  # - name: OhmFlux
-  #   buildsystem: simple
-  #   sources:
-  #     - type: dir
-  #       path: /opt/OhmFlux
-  #   build-commands:
-  #     - mkdir -p /OhmFlux
-  #     - cp -r . ./OhmFlux
+  - name: OhmFlux
 
 
   # IronTuner
