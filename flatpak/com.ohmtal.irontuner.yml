@@ -33,9 +33,22 @@ modules:
   #       url: https://curl.se
   #       sha256: 4946399066667A000... # Passende Checksumme einfügen
 
+
+  # OhmFlux
+  # - name: OhmFlux
+  #   buildsystem: simple
+  #   sources:
+  #     - type: dir
+  #       path: /opt/OhmFlux
+  #   build-commands:
+  #     - mkdir -p /OhmFlux
+  #     - cp -r . ./OhmFlux
+
+
   # IronTuner
   - name: IronTuner
     buildsystem: cmake
+    config-opts:
     sources:
       - type: dir
         path: ../
