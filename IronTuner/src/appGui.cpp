@@ -1798,7 +1798,8 @@ namespace IronTuner {
         }
 
         DrawMenuBar();
-        if (getMain()->getAppSettings().ShowConsole) mConsole.Draw("Console", &getMain()->getAppSettings().ShowConsole);
+        // if (getMain()->getAppSettings().ShowConsole)
+        mConsole.Draw("Console", &getMain()->getAppSettings().ShowConsole);
 
         // --------------------
         // CARUSEL

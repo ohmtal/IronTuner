@@ -6,10 +6,10 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-#include <core/fluxBaseObject.h>
-#include <core/fluxRenderObject.h>
-#include <gui/fluxGuiGlue.h>
-#include <gui/ImConsole.h>
+#include "core/fluxBaseObject.h"
+#include "core/fluxRenderObject.h"
+#include "gui/fluxGuiGlue.h"
+#include "gui/ImConsole.h"
 #include "net/CurlGlue.h"
 #include "net/NetTools.h"
 #include "core/fluxTexture.h"
