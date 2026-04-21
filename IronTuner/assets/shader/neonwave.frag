@@ -20,6 +20,7 @@ const int FreqInc = 1;
 
 
 const float speed = 5.0;
+const float PI2 = 6.28318530718;
 //---------------------------------------------------------
 
 
@@ -78,13 +79,14 @@ void main() {
     }
 */
 
+
     for (int i = 0; i < 32; i+=FreqInc) {
         if ( i > int(u_freqCount) ) return;
         float t = float(i) / 32.0;
         float freq = u_freqs[i];
         if (i == 0) freq *= 0.85; //normalize first bass bar
         float waveFreq = 30.0 + t * 10.0;
-        float phase = u_time * speed * (2.0 + t) + t * 6.28;
+        float phase = mod(u_time * speed * (2.0 + t), PI2) + t * PI2;
         waveSum += sin(uv.x * waveFreq + phase) * freq * 0.15 ;
     }
 
