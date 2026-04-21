@@ -1,0 +1,41 @@
+id: org.example.MyApp
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+command: my-app-binary
+
+finish-args:
+  - --socket=wayland
+  - --socket=x11
+  - --device=dri
+  - --share=ipc
+  - --share=network # Für curl (OpenSSL)
+
+modules:
+  # - name: sdl3
+  #   buildsystem: cmake
+  #   config-opts:
+  #     - -DSDL_STATIC=ON
+  #     - -DSDL_SHARED=OFF
+  #   sources:
+  #     - type: git
+  #       url: https://github.com
+  #       tag: preview-3.1.6 # Nutze einen stabilen Tag
+  #
+  # - name: curl
+  #   buildsystem: autotools
+  #   config-opts:
+  #     - --disable-shared
+  #     - --enable-static
+  #     - --with-openssl # Nutzt OpenSSL aus dem SDK
+  #   sources:
+  #     - type: archive
+  #       url: https://curl.se
+  #       sha256: 4946399066667A000... # Passende Checksumme einfügen
+
+  # IronTuner
+  - name: IronTuner
+    buildsystem: cmake
+    sources:
+      - type: dir
+        path: ../
