@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(DISABLE_DEMOS ON CACHE BOOL "Disable engine demos" FORCE)
 
-set(OHMFLUX_DIR "/opt/OhmFluxI" CACHE PATH "Path to the OhmFlux engine source directory")
+set(OHMFLUX_DIR "/opt/OhmFlux" CACHE PATH "Path to the OhmFlux engine source directory")
 
 
 include(FetchContent)
@@ -150,5 +150,5 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
     configure_project_target(IronTuner ${IRONTUNER_DIR} "${IRONTUNER_DIR}/assets@assets" "${IRONTUNER_SOURCES}" ${RES_FILES})
 
 elseif(BUILD_IRONTUNER)
-    message(WARNING "CURL: EMSCRIPTEN BUILD IS NOT FIXED SO FAR!!")
+    message(FATAL_ERROR "CURL: EMSCRIPTEN BUILD NOT AVAILABLE!")
 endif()
