@@ -61,11 +61,28 @@ namespace IronTuner {
     //--------------------------------------------------------------------------
     void AppMain::Update(const double& dt)
     {
+        static uint8_t lowFPSCounter = 0;
         if (mAppGui) {
             mAppGui->Update(dt);
             if (mBackGroundEffects && getAppSettings().BackGroundRenderId >= 0) {
-                mBackGroundEffects->UpdateLevels(dt,
-                                                 mAppGui->getAudioLevels());
+                mBackGroundEffects->UpdateLevels(dt, mAppGui->getAudioLevels());
+
+                if (getMain()->getFPS() < 15) {
+                    lowFPSCounter++;
+                    if ( lowFPSCounter > 250 ) {
+                        lowFPSCounter = 0;
+                        if (mBackGroundEffects->mFragShaders.size() > getAppSettings().BackGroundRenderId) {
+                            int newId = -1;
+                            if ( mBackGroundEffects->mFragShaders[getAppSettings().BackGroundRenderId].isHighLoad ) {
+                                newId = DEFAULT_BACKGROUND_ID;
+                                getAppSettings().ToasterDetected = true;
+                            }
+                            setBackGroundRenderId(newId);
+                            Log("Low FPS detected! switchting to background id %d", newId);
+                        }
+
+                    }
+                }
             }
         }
         Parent::Update(dt);

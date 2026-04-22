@@ -16,6 +16,7 @@
 
 namespace IronTuner {
 
+
     class BackGroundEffects : public FluxBaseObject{
     private:
          FluxShader* mShader = nullptr;
@@ -34,27 +35,29 @@ namespace IronTuner {
 
          std::string mShaderPath = "";
          const std::string mVertShaderFile = "quad.vert";
-         const std::vector<std::string> mFragShaderFiles = {
-             "glowAndBars.frag"         // 0
-             , "liquidTerrain.frag"     // 1
-             , "rain.frag"              // 2
-             , "wave.frag"              // 3
-             , "glow.frag"              // 4
-             , "glowLightning.frag"     // 5
-             , "bars.frag"              // 6
-             , "liquidAura.frag"        // 7
-             , "liquidAura2.frag"       // 8
-             , "CausticsDark.frag"      // 9
-             , "Caustics.frag"          // 10
-             , "liquidAura3.frag"       // 11
-             , "starfield.frag"         // 12
-             , "CausticsMetal.frag"     // 13
-             , "neonwave.frag"          // 14
 
-#ifdef FLUX_DEBUG
-             , "test.frag" 
-#endif
-        };
+//          const std::vector<std::string> mFragShaderFiles = {
+//              "glowAndBars.frag"         // 0
+//              , "liquidTerrain.frag"     // 1
+//              , "rain.frag"              // 2
+//              , "wave.frag"              // 3
+//              , "glow.frag"              // 4
+//              , "glowLightning.frag"     // 5
+//              , "bars.frag"              // 6
+//              , "liquidAura.frag"        // 7
+//              , "liquidAura2.frag"       // 8
+//              , "CausticsDark.frag"      // 9
+//              , "Caustics.frag"          // 10
+//              , "liquidAura3.frag"       // 11
+//              , "starfield.frag"         // 12
+//              , "CausticsMetal.frag"     // 13
+//              , "neonwave.frag"          // 14
+//
+// #ifdef FLUX_DEBUG
+//              , "test.frag"
+// #endif
+//         };
+
 
 
 
@@ -67,26 +70,33 @@ namespace IronTuner {
 
         bool mShaderESTesting = false;
         //-------------------
-        const std::vector<std::string> mFragShaderCaptions = {
-            "Glow and Bars"         // 0
-            , "Milchglas"           // 1
-            , "Rain"                // 2
-            , "Wave"                // 3
-            , "Glow and Bars II"    // 4
-            , "Glow and Lightning"  // 5
-            , "Bars"                // 6
-            , "Liquid Aura"         // 7
-            , "Liquid Aura II"      // 8
-            , "Liquid Blue"         // 9
-            , "Caustics"            // 10
-            , "Liquid Aura III"     // 11
-            , "Neon Starfield"      // 12
-            , "Liquid Metal"        // 13
-            , "Neon Wave"                // 14
+        struct ShaderInfo {
+            std::string fileName;
+            std::string Caption;
+            bool isHighLoad;
+        };
 
-#ifdef FLUX_DEBUG
-            , "TEST!"
-#endif
+
+        const std::vector<ShaderInfo> mFragShaders = {
+            { "glowAndBars.frag"       ,"Glow and Bars"          , false}  // 0
+            ,{ "liquidTerrain.frag"     , "Milchglas"            , false}  // 1
+            , {"rain.frag"           , "Rain"                    , false}  // 2
+            , {"wave.frag"           , "Wave"                    , false}   // 3
+            , {"glow.frag"           , "Glow and Bars II"        , false}  // 4
+            , {"glowLightning.frag"  , "Glow and Lightning"      , true}  // 5
+            , {"bars.frag"           , "Bars"                    , false}  // 6
+            , {"liquidAura.frag"     , "Liquid Aura"             , true}   // 7
+            , {"liquidAura2.frag"    , "Liquid Aura II"          , true}   // 8
+            , {"liquidAura3.frag"    , "Liquid Aura III"         , true}   // 9
+            , {"CausticsMetal.frag"  , "Liquid Metal"            , true}   // 10
+            , {"CausticsDark.frag"   , "Liquid Black and Blue"   , true}   // 11
+            , {"Caustics.frag"       , "Caustics"                , true}   // 12
+            , {"starfield.frag"      , "Neon Starfield"          , true}   // 13
+            , {"neonwave.frag"       , "Neon Wave"               , false}   // 14
+
+            #ifdef FLUX_DEBUG
+            , {"test.frag"           , "Test"                    , true}
+            #endif
         };
 
 
@@ -96,8 +106,8 @@ namespace IronTuner {
         ~BackGroundEffects() = default;
         //----------------------------------------------------------------------
         bool LoadShader(uint8_t fragShaderId = 0, bool enableScanLines = false) {
-            if (fragShaderId >= mFragShaderFiles.size() ) fragShaderId = 0;
-            return LoadShader(mFragShaderFiles[fragShaderId], enableScanLines);
+            if (fragShaderId >= mFragShaders.size() ) fragShaderId = 0;
+            return LoadShader(mFragShaders[fragShaderId].fileName, enableScanLines);
         }
         //----------------------------------------------------------------------
         bool LoadShader(std::string fileName, bool enableScanLines = false) {

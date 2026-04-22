@@ -17,6 +17,9 @@
 
 namespace IronTuner {
 
+    constexpr int DEFAULT_BACKGROUND_ID = 4;
+
+
     struct AppSettings {
         FluxRadio::RadioStation CurrentStation;
         float Volume = 1.f;
@@ -33,8 +36,10 @@ namespace IronTuner {
         bool continuePlayingAfterDisconnect = false;
 
         bool disconnectOnBackground = true; //android
-        // bool requestBackgroundPlaying = false; //android
 
+        bool ToasterDetected    = false; //BAD PC disable highload backgrounds
+
+        // bool requestBackgroundPlaying = false; //android
     };
 
     //--------------------------------------------------------------------------
@@ -53,7 +58,7 @@ namespace IronTuner {
             {"continuePlayingAfterDisconnect", s.continuePlayingAfterDisconnect},
             //android
             {"disconnectOnBackground", s.disconnectOnBackground},
-            // {"requestBackgroundPlaying", s.requestBackgroundPlaying},
+            {"ToasterDetected", s.ToasterDetected},
 
 
         };
@@ -63,7 +68,7 @@ namespace IronTuner {
         s.Volume                = j.value("Volume", 1.f);
         s.UIInitialized         = j.value("UIInitialized", false);
         s.SideBarOpen           = j.value("SideBarOpen", false);
-        s.BackGroundRenderId    = j.value("BackGroundRenderId", 4);
+        s.BackGroundRenderId    = j.value("BackGroundRenderId", DEFAULT_BACKGROUND_ID);
         s.BackGroundScanLines   = j.value("BackGroundScanLines", false);
         s.PageIndex             = j.value("PageIndex", 1);
         s.Scale                 = j.value("Scale", 1.f);
@@ -72,7 +77,7 @@ namespace IronTuner {
         s.continuePlayingAfterDisconnect = j.value("continuePlayingAfterDisconnect", false);
         //android
         s.disconnectOnBackground = j.value("disconnectOnBackground", true);
-        // s.requestBackgroundPlaying = j.value("requestBackgroundPlaying", false);
+        s.ToasterDetected = j.value("ToasterDetected", false);
     }
 
 

@@ -628,6 +628,7 @@ namespace IronTuner {
 
 
 
+
     }
     // -----------------------------------------------------------------------------
 
@@ -1315,8 +1316,13 @@ namespace IronTuner {
                     ImGui::Separator();
 
                     if (getMain()->getBackGroundRenderEffect() ) {
-                        for (size_t i = 0; i < getMain()->getBackGroundRenderEffect()->mFragShaderCaptions.size(); i++ ) {
-                            std::string caption =  getMain()->getBackGroundRenderEffect()->mFragShaderCaptions[i] + "##BackGroundRenderId";
+                        for (size_t i = 0; i < getMain()->getBackGroundRenderEffect()->mFragShaders.size(); i++ ) {
+                            if ( getMain()->getAppSettings().ToasterDetected &&
+                                getMain()->getBackGroundRenderEffect()->mFragShaders[i].isHighLoad
+                            ) {
+                                continue;
+                            }
+                            std::string caption =  getMain()->getBackGroundRenderEffect()->mFragShaders[i].Caption + "##BackGroundRenderId";
                             isSelected = (i == getMain()->getAppSettings().BackGroundRenderId);
                             if (ImGui::MenuItem(caption.c_str(), NULL, &isSelected)) {
                                 getMain()->setBackGroundRenderId((int)i, getMain()->getAppSettings().BackGroundScanLines);
@@ -1352,6 +1358,9 @@ namespace IronTuner {
                     } else {
                         changed |= ImGui::Checkbox("Stop on enter Background", &getMain()->getAppSettings().disconnectOnBackground);
                     }
+                    /*if (isDebugBuild())*/
+                    changed |= ImGui::Checkbox("Hide heavy visuals", &getMain()->getAppSettings().ToasterDetected);
+
 
                     if (changed) SaveSettings();
                     ImGui::EndMenu();
@@ -2191,7 +2200,12 @@ namespace IronTuner {
                      if (!isAndroidBuild()) ImFlux::ShadowText( ("Recording path: " + mAudioRecorder->getPath()).c_str());
                  }
              }
-             if (ImGui::CollapsingHeader("Audio - Buffer")) {
+             if (ImGui::CollapsingHeader("Metrics")) {
+
+                 ImFlux::ShadowText(std::format("FPS         {:8} ",getMain()->getFPS()).c_str());
+                 ImGui::Separator();
+
+                 // buffer:
                  static std::array<size_t, 3> bufferValues = {0, 0, 0};
                  static double nextUpdate = 0.0;
                  const double updateInterval = 0.2;
