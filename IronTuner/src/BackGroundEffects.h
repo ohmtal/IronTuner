@@ -184,7 +184,7 @@ namespace IronTuner {
         }
         //----------------------------------------------------------------------
         void UpdateLevels(const double& dt, const Point2F audioLevels)  {
-            mTotalTime += static_cast<float>(dt / 1000.f );
+            mTotalTime += static_cast<float>(dt);
             mRmsL = audioLevels.x;
             mRmsR = audioLevels.y;
 
