@@ -61,16 +61,23 @@ namespace IronTuner {
     //--------------------------------------------------------------------------
     void AppMain::Update(const double& dt)
     {
-        static uint8_t lowFPSCounter = 0;
+        static uint16_t lowFPSCounter = 0;
         if (mAppGui ) {
             mAppGui->Update(dt);
             if (mBackGroundEffects && getAppSettings().BackGroundRenderId >= 0) {
                 mBackGroundEffects->UpdateLevels(dt, mAppGui->getAudioLevels());
 
-                // added > 1 because when my system is wake up from sleep (BSD) it have a FPS of one
-                if (getMain()->getFPS() < 15 && gAppStatus.Visible && getMain()->getFPS() > 1 ) {
+                if (getMain()->getFPS() < 15 && gAppStatus.Visible  ) {
                     lowFPSCounter++;
-                    if ( lowFPSCounter > 250 ) {
+                    static uint16_t threshold = 250;
+                    if ( getMain()->getFPS() < 3 ) {
+                        if (threshold < 1000) dLog("Very low fps (%d) detected - guess it's a wake up from sleep.", getFPS());
+                        threshold = 1000;
+
+                    } else {
+                        threshold = 250;
+                    }
+                    if ( lowFPSCounter > threshold ) {
                         lowFPSCounter = 0;
                         if (mBackGroundEffects->mFragShaders.size() > getAppSettings().BackGroundRenderId) {
                             int newId = -1;
@@ -81,7 +88,6 @@ namespace IronTuner {
                             Log("Low FPS detected (%d)! switchting to background id %d", getFPS(), newId);
                             setBackGroundRenderId(newId);
                         }
-
                     }
                 }
             }
