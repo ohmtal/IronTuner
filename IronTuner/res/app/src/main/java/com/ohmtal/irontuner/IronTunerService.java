@@ -51,14 +51,14 @@ public class IronTunerService extends Service {
             String newText = intent.getStringExtra("update_text");
             updateNotification(newText);
         } else {
-            startForeground(NOTIF_ID, buildNotification("Iron Tuner", "playing music ;)"));
+            startForeground(NOTIF_ID, buildNotification("Irön Tuner", "playing music ;)"));
         }
 
         return START_NOT_STICKY;
     }
     //--------------------------------------------------------------------------
     private void updateNotification(String newText) {
-        Notification notification = buildNotification("Iron Tuner", newText);
+        Notification notification = buildNotification("Irön Tuner", newText);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(NOTIF_ID, notification);
     }

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Iron Tuner
+// Irön Tuner
 //-----------------------------------------------------------------------------
 #include <SDL3/SDL_main.h> //<<< Android! and Windows
 #include "appMain.h"
@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
 
     IronTuner::AppMain* app = new IronTuner::AppMain();
     app->mSettings.Company = "Ohmtal";
-    app->mSettings.Caption = "Iron Tuner";
-    app->mSettings.Version = "0.260422.22.2";
+    app->mSettings.Caption = "Irön Tuner";
+    app->mSettings.Version = "0.260504";
     app->mSettings.enableLogFile   = true;
     app->mSettings.WindowMaximized = false;
     app->mSettings.ScreenWidth  = 1152; // 1920;

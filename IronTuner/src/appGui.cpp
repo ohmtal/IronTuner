@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Thomas Hühn (XXTH)
 // SPDX-License-Identifier: MIT
 //-----------------------------------------------------------------------------
-// Iron Tuner
+// Irön Tuner
 //-----------------------------------------------------------------------------
 #include "appGui.h"
 #include "appMain.h"

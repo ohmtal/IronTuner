@@ -21,7 +21,7 @@
         #include "miniaudio.h"
     ```
     - [ ] flac directly supported by miniaudio. Test stations: https://www.hiresaudio.online/hires-internet-radio/
-    - [ ] ⚡ aac is problematic since i have to use ffmpeg decoder 
+    - [NOT] ⚡ aac is problematic since i have to use ffmpeg decoder 
     
 - Buffer experiments:
     - [X] add pause - fill up buffer
