@@ -802,18 +802,8 @@ namespace IronTuner {
                 if (ImGui::Begin("Favourite Dialog", &mStationContextData.showDialog, ImGuiWindowFlags_AlwaysAutoResize) ) {
                     ImGui::SeparatorText(mStationContextData.isEdit ? "Edit" : "New");
 
-                    // char strBuff[1024];
-                    // strncpy(strBuff, mStationContextData.workStation.name.c_str(), sizeof(strBuff));
                     InputText("Station Name",mStationContextData.workStation.name);
-                    // if (InputText("Station Name",strBuff, sizeof(strBuff))) {
-                    //     mStationContextData.workStation.name = strBuff;
-                    // }
-
                     InputText("URL",mStationContextData.workStation.url);
-                    // strncpy(strBuff, mStationContextData.workStation.url.c_str(), sizeof(strBuff));
-                    // if (InputText("URL", strBuff, sizeof(strBuff))) {
-                    //     mStationContextData.workStation.url = strBuff;
-                    // }
                     ImFlux::SeparatorFancy();
 
                     if (ImGui::Button("Save")) {
@@ -1071,9 +1061,10 @@ namespace IronTuner {
 
 
             InputText("##SearchName", strBuff, [this](const std::string& value) {
-                    mRadioBrowser->searchStationsByNameAndTag(value, "");
-                    mStations.getQueryStringMutable() = value;
-                    dLog("query for %s", value.c_str());
+                    std::string queryStr = FluxStr::trim(value);
+                    mRadioBrowser->searchStationsByNameAndTag(queryStr, "");
+                    mStations.getQueryStringMutable() = queryStr;
+                    dLog("query for >%s<", queryStr.c_str());
                 }
             );
             ImFlux::Hint("Search Radio Station by Name");
@@ -2251,7 +2242,7 @@ namespace IronTuner {
         }
         return false;
     }
-
+    // -----------------------------------------------------------------------------
     //FIXME store title to cancel endless skipping ?!
     void AppGui::SkipToNextTitle() {
         if ( FluxSchedule.isPending(mSkipToNextTitleTaskID) ) return;
@@ -2268,5 +2259,6 @@ namespace IronTuner {
             }
         });
     }
+    // -----------------------------------------------------------------------------
 
 }; //namespace
