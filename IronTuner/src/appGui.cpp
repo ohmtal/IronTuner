@@ -265,6 +265,9 @@ namespace IronTuner {
         }
 
 
+        if (cmd == "vsync") {
+            getScreenObject()->setVSync(!getScreenObject()->getVsync());
+        }
 
         if (cmd == "ff" ) {
               // size_t bytes = std::stoi (FluxStr::getWord(cmdline,1));

@@ -18,6 +18,7 @@
 namespace IronTuner {
 
     constexpr int DEFAULT_BACKGROUND_ID = 4;
+    constexpr int LOW_BACKGROUND_ID = 6;
 
 
     struct AppSettings {

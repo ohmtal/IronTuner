@@ -6,91 +6,64 @@ uniform float u_time;
 uniform float u_rmsL;
 uniform float u_rmsR;
 uniform vec2 u_res;
+
 uniform float u_freqCount;
 uniform float u_freqs[32];
 
-
-const float speed = 5.0;
-
-float hash(float x) {
-    return fract(sin(x * 12.9898) * 43758.5453);
-}
-
-
-vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - vec3(K.w));
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
-
-
 void main() {
-    vec3 finalColor = vec3(0.0,0.0,0.0);
     vec2 uv = gl_FragCoord.xy / u_res.xy;
-    vec2 uvGlow = (gl_FragCoord.xy * 2.0 - u_res.xy) / min(u_res.y, u_res.x);
 
-    //rms values. silent with a little glow
-    float rmsL = clamp(u_rmsL, 0.2, 1.0);
-    float rmsR = clamp(u_rmsR, 0.2, 1.0);
-    float energy = (u_rmsL + u_rmsR) * 0.5;
+    // V-shape geometry configuration
+    float slant =  0.15; //0.35;      // Tilt angle of the bars
+    float spacing = 0.15; //0.15;    // Bottom separation from the center
 
-    // -------------------- GLOW --------------------------
+    // Dynamic thickness: grows wider as UV.y increases
+    float baseThickness = 0.12; //0.03;
+    float thickness = baseThickness + (uv.y * 0.06);
 
-    vec3 colorL = vec3(0.4,0.01,0.02);
-    vec3 colorR = vec3(0.01,0.01,0.4);
+    // Center-aligned X coordinate
+    float centerX = uv.x - 0.5;
 
-    float distL = length(uvGlow + vec2(rmsL * 2.5, 0.0));
-    float distR = length(uvGlow - vec2(rmsR * 2.5, 0.0));
+    // Distance calculation to the V-shaped axes
+    float distL = abs(centerX + (uv.y * slant) + spacing);
+    float distR = abs(centerX - (uv.y * slant) - spacing);
 
-    float glowL = 1.4 / (distL + 0.7);
-    float glowR = 1.4 / (distR + 0.7);
+    // Anti-aliased side edges for the tapering bars
+    float edgeSmooth = 0.005;
+    float maskL = smoothstep(thickness, thickness - edgeSmooth, distL);
+    float maskR = smoothstep(thickness, thickness - edgeSmooth, distR);
 
-    vec3 glowColor = vec3(0.1, 0.1, 0.2);
+    // LED Grid
+    float ledCount = 50.0; //30
+    float ledPattern = fract(uv.y * ledCount);
+    float ledGap = 0.15;
+    float ledGrid = smoothstep(ledGap, ledGap + 0.05, ledPattern);
 
-    glowColor += colorL * glowL * rmsL;
-    glowColor += colorR * glowR * rmsR;
+    // Discrete height steps matching the LED grid positions
+    float steppedY = floor(uv.y * ledCount) / ledCount;
+    float heightL = step(steppedY, u_rmsL);
+    float heightR = step(steppedY, u_rmsR);
 
-//     finalColor += glowColor;
+    // Combine geometry, LED grid, and audio height limits
+    float finalL = maskL * heightL * ledGrid;
+    float finalR = maskR * heightR * ledGrid;
+    float totalMask = clamp(finalL + finalR, 0.0, 1.0);
 
-    // -------------------- LIGHTNING BOLT --------------------
+    // Color gradient definitions
+    vec3 colorGreen  = vec3(0.0, 1.0, 0.2);
+    vec3 colorYellow = vec3(1.0, 1.0, 0.0);
+    vec3 colorRed    = vec3(1.0, 0.0, 0.0);
 
-   float waveSum = 0.0;
-/*
-    for (int i = 0; i < 32; i++) {
-        float t = float(i) / 32.0;
-        float freq =  u_freqs[i];
-        float amplitude = freq * (0.1 + t * 0.2);
-        float waveFreq = 50.0 + t * 10.0;
-
-        waveSum += sin(uv.x * waveFreq + u_time * speed + waveSum * 2.0) * amplitude * 0.75;
-    }
-*/
-
-       for (int i = 0; i < 32; i++) {
-        float t = float(i) / 32.0;
-        float freq = u_freqs[i];
-        if (i == 0) freq *= 0.85; //normalize first bass bar
-        float waveFreq = 30.0 + t * 10.0;
-        float phase = u_time * speed * (2.0 + t) + t * 6.28;
-        waveSum += sin(uv.x * waveFreq + phase) * freq * 0.15 ;
-    }
+    // Vertical color interpolation based on the discrete LED position
+     vec3 gradient = mix(colorGreen, colorYellow, smoothstep(0.0, 0.6, steppedY));
+     gradient = mix(gradient, colorRed, smoothstep(0.6, 1.0, steppedY));
 
 
 
-    float boltShape = abs(uvGlow.y +  waveSum);
-    float boltIntensity = smoothstep(0.3, 0.0, boltShape);
-    const float glowMulti = 0.3;
-    vec3 boltGlow = vec3(0.3, 0.5, 1.0) * (glowMulti / (boltShape + 0.04));
+    // Dark background tint
+    vec3 background = vec3(0.05, 0.05, 0.08);
 
-    float hue = fract(u_time * 0.5);
-    vec3 colorDeep = hsv2rgb(vec3(hue, 0.2 + energy * 0.5, 0.2));
-    vec3 boltColor = colorDeep * (boltIntensity + boltGlow) ;
-    // check energy
-    finalColor += boltColor *  smoothstep(0.05, 0.5, energy);
-
-    // --- darken ----
-    float darken = 1.0 - length(uv - 0.5) * 0.8;
-    finalColor *= clamp(darken, 0.0, 1.0);
-
+    // Output final composition
+    vec3 finalColor = mix(background, gradient, totalMask);
     FragColor = vec4(finalColor, 1.0);
 }

@@ -2,7 +2,7 @@
 precision mediump float;
 
 // --------------------------------------------
-// RadioWana Background Shader: Bars
+// Background Shader: Bars
 // --------------------------------------------
 
 out vec4 FragColor;
@@ -27,7 +27,7 @@ void main() {
     vec3 finalColor = vec3(0.0, 0.0, 0.0);
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_res.xy) / min(u_res.y, u_res.x);
 
-    float backHue = fract(u_time * 0.1);
+    float backHue = fract(u_time * 0.01);
     finalColor = hsv2rgb(vec3(backHue, 0.5, 0.2 ));
 
 
@@ -72,20 +72,20 @@ void main() {
     }
 
     // -------------- --- CRT Scanline & Grain Layer --- -------------------
-    if ( u_scanlines ) {
-        float rms = (u_rmsL + u_rmsR) * 0.5;
-        // Create moving scanlines based on screen height
-        float scanline = sin(uv.y * u_res.y * 1.5 - u_time * 2.0) * 0.05;
-
-        // Subtle Grain
-        float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-        //     grain = (grain - 0.5) * 0.05; // range -0.025 to 0.025
-        grain = (grain - 0.5) * 0.025; // range -0.025 to 0.025
-
-        finalColor -= scanline; // Darkens every second/third pixel row
-        finalColor += grain;    // Adds the organic noise
-
-    }
+//     if ( u_scanlines ) {
+//         float rms = (u_rmsL + u_rmsR) * 0.5;
+//         // Create moving scanlines based on screen height
+//         float scanline = sin(uv.y * u_res.y * 1.5 - u_time * 2.0) * 0.05;
+//
+//         // Subtle Grain
+//         float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+//         //     grain = (grain - 0.5) * 0.05; // range -0.025 to 0.025
+//         grain = (grain - 0.5) * 0.025; // range -0.025 to 0.025
+//
+//         finalColor -= scanline; // Darkens every second/third pixel row
+//         finalColor += grain;    // Adds the organic noise
+//
+//     }
 
 
     FragColor = vec4(finalColor, 1.0);

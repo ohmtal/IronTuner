@@ -3,7 +3,7 @@
 precision highp float;
 
 // --------------------------------------------
-// RadioWana Background Shader: liquid
+// Background Shader: liquid
 // --------------------------------------------
 
 out vec4 FragColor;

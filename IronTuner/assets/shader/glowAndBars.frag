@@ -2,7 +2,7 @@
 precision mediump float;
 
 // --------------------------------------------
-// RadioWana Background Shader: Glow and Bars
+// Background Shader: Glow and Bars
 // --------------------------------------------
 
 out vec4 FragColor;

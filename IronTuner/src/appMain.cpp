@@ -82,7 +82,7 @@ namespace IronTuner {
                         if (mBackGroundEffects->mFragShaders.size() > getAppSettings().BackGroundRenderId) {
                             int newId = -1;
                             if ( mBackGroundEffects->mFragShaders[getAppSettings().BackGroundRenderId].isHighLoad ) {
-                                newId = DEFAULT_BACKGROUND_ID;
+                                newId = LOW_BACKGROUND_ID;
                                 getAppSettings().ToasterDetected = true;
                             }
                             Log("Low FPS detected (%d)! switchting to background id %d", getFPS(), newId);

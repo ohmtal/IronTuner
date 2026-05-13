@@ -3,7 +3,7 @@
 precision highp float;
 
 // -------------------------------------------
-// RadioWana Background Shader: rain and Glow
+// Background Shader: rain and Glow
 // -------------------------------------------
 
 out vec4 FragColor;
