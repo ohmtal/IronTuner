@@ -42,56 +42,81 @@ option(BUILD_IRONTUNER "Build IronTuner" ON)
 if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
     set(IRONTUNER_DIR "${CMAKE_CURRENT_LIST_DIR}/IronTuner")
 
+   if(MSVC)
+        set(RES_FILES "${IRONTUNER_DIR}/res/resources.rc")
+   endif()
+
+
+
 	if(MSVC)
 		find_package(CURL REQUIRED)
 		list(APPEND PROJECT_LIBS CURL::libcurl)
 		message(STATUS "Added Curl .....")
 
-		set(RES_FILES "${IRONTUNER_DIR}/res/resources.rc")
-
 	else ()
 
 
 
-        if (ANDROID)
-            # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-            # FetchContent_Declare(
-            #     boringssl
-            #     URL "${CMAKE_CURRENT_LIST_DIR}/lib/boringssl-0.20260327.0.tar.gz"
-            #     DOWNLOAD_EXTRACT_TIMESTAMP FALSE
-            # )
-            #
-            # FetchContent_MakeAvailable(boringssl)
-            #
-            # set(FAKE_LIB_PATH "${boringssl_SOURCE_DIR}/CMakeLists.txt")
-            #
-            # set(OPENSSL_FOUND TRUE CACHE BOOL "" FORCE)
-            # set(OpenSSL_FOUND TRUE CACHE BOOL "" FORCE)
-            #
-            # set(OPENSSL_CRYPTO_LIBRARY "${FAKE_LIB_PATH}" CACHE FILEPATH "" FORCE)
-            # set(OPENSSL_SSL_LIBRARY "${FAKE_LIB_PATH}" CACHE FILEPATH "" FORCE)
-            #
-            # set(OPENSSL_INCLUDE_DIR "${boringssl_SOURCE_DIR}/include" CACHE PATH "" FORCE)
-            # set(OPENSSL_VERSION "1.1.1" CACHE STRING "" FORCE)
-            # set(OPENSSL_IS_BORINGSSL ON CACHE BOOL "" FORCE)
-            # set(CURL_USE_OPENSSL ON CACHE BOOL "" FORCE)
+        # if (ANDROID)
+        #     # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+        #     # FetchContent_Declare(
+        #     #     boringssl
+        #     #     URL "${CMAKE_CURRENT_LIST_DIR}/lib/boringssl-0.20260327.0.tar.gz"
+        #     #     DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        #     # )
+        #     #
+        #     # FetchContent_MakeAvailable(boringssl)
+        #     #
+        #     # set(FAKE_LIB_PATH "${boringssl_SOURCE_DIR}/CMakeLists.txt")
+        #     #
+        #     # set(OPENSSL_FOUND TRUE CACHE BOOL "" FORCE)
+        #     # set(OpenSSL_FOUND TRUE CACHE BOOL "" FORCE)
+        #     #
+        #     # set(OPENSSL_CRYPTO_LIBRARY "${FAKE_LIB_PATH}" CACHE FILEPATH "" FORCE)
+        #     # set(OPENSSL_SSL_LIBRARY "${FAKE_LIB_PATH}" CACHE FILEPATH "" FORCE)
+        #     #
+        #     # set(OPENSSL_INCLUDE_DIR "${boringssl_SOURCE_DIR}/include" CACHE PATH "" FORCE)
+        #     # set(OPENSSL_VERSION "1.1.1" CACHE STRING "" FORCE)
+        #     # set(OPENSSL_IS_BORINGSSL ON CACHE BOOL "" FORCE)
+        #     # set(CURL_USE_OPENSSL ON CACHE BOOL "" FORCE)
+        #
+        #     set(CURL_USE_OPENSSL OFF CACHE INTERNAL "")
+        #
+        # else()
+        #     set(CURL_USE_OPENSSL ON CACHE INTERNAL "")
+        # endif()
 
-            set(CURL_USE_OPENSSL OFF CACHE INTERNAL "")
+        # pre MSVC static BUILD >>>>>>>>
+		# set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
+		# set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
+		# set(BUILD_TESTING OFF CACHE INTERNAL "")
+		# set(BUILD_LIBCURL_DOCS OFF CACHE INTERNAL "")
+		# set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
+		# set(CURL_USE_LIBPSL OFF CACHE INTERNAL "")
+		# set(CURL_DISABLE_LDAP ON CACHE INTERNAL "")
+		# set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "")
+		# set(HTTP_ONLY ON CACHE INTERNAL "") # i only need http at the moment !
+		# <<<<<<<<<<<<<<<<
+        set(CURL_STATIC_CRT OFF CACHE INTERNAL "")
 
-        else()
-            set(CURL_USE_OPENSSL ON CACHE INTERNAL "")
-        endif()
+        set(HTTP_ONLY ON CACHE INTERNAL "")
+        set(CURL_DISABLE_COOKIES ON CACHE INTERNAL "")
+        set(CURL_DISABLE_ALTSVC ON CACHE INTERNAL "")
+        set(CURL_DISABLE_HSTS ON CACHE INTERNAL "")
+        set(CURL_DISABLE_MIME ON CACHE INTERNAL "")
+        set(CURL_DISABLE_PARSEDATE ON CACHE INTERNAL "")
 
+        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "")
+        set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "")
 
-		set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
-		set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
-		set(BUILD_TESTING OFF CACHE INTERNAL "")
-		set(BUILD_LIBCURL_DOCS OFF CACHE INTERNAL "")
-		set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
-		set(CURL_USE_LIBPSL OFF CACHE INTERNAL "")
-		set(CURL_DISABLE_LDAP ON CACHE INTERNAL "")
-		set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "")
-		set(HTTP_ONLY ON CACHE INTERNAL "") # i only need https at the moment !
+        set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
+        set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
+        set(BUILD_TESTING OFF CACHE INTERNAL "")
+        set(BUILD_LIBCURL_DOCS OFF CACHE INTERNAL "")
+        set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
+        set(CURL_USE_LIBPSL OFF CACHE INTERNAL "")
+        set(CURL_DISABLE_LDAP ON CACHE INTERNAL "")
+        set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "")
 
 
 		FetchContent_Declare(
@@ -117,8 +142,9 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
     endif()
 
 
+
 		list(APPEND PROJECT_LIBS libcurl)
-	endif()
+  endif()
 
 
 
@@ -148,6 +174,29 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
         "${IRONTUNER_DIR}/src/fluxRadio/StreamInfo.cpp"
     )
     configure_project_target(IronTuner ${IRONTUNER_DIR} "${IRONTUNER_DIR}/assets@assets" "${IRONTUNER_SOURCES}" ${RES_FILES})
+
+    if(MSVC)
+
+        # Attempt to prevent false positives
+        set_target_properties(IronTuner PROPERTIES
+            INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+        )
+
+        set_property(TARGET IronTuner APPEND_STRING PROPERTY
+          LINK_FLAGS_RELEASE " /HIGHENTROPYVA /DYNAMICBASE"
+            # LINK_FLAGS_RELEASE " /LTCG /SECTION:.text,erw /ALIGN:4096"
+        )
+
+        set_property(TARGET IronTuner APPEND_STRING PROPERTY
+            COMPILE_FLAGS " /Gy"
+        )
+        set_property(TARGET IronTuner APPEND_STRING PROPERTY
+            LINK_FLAGS_RELEASE " /OPT:REF /OPT:ICF"
+        )
+
+        target_link_options(IronTuner PRIVATE "/MANIFESTINPUT:${IRONTUNER_DIR}/res/app.manifest")
+    endif()
+
 
 elseif(BUILD_IRONTUNER)
     message(FATAL_ERROR "CURL: EMSCRIPTEN BUILD NOT AVAILABLE!")

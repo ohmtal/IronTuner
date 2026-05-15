@@ -280,7 +280,7 @@ namespace IronTuner {
         }
 
         if (cmd == "fl" )  {
-            float limit = std::stof (FluxStr::getWord(cmdline,1));
+            float limit = FluxStr::strToFloat(FluxStr::getWord(cmdline,1));
             getMain()->mSettings.frameLimiter = limit;
             dLog("Setting Framelimit to %f (current fps: %d)", limit, getMain()->getFPS());
 
@@ -1269,7 +1269,7 @@ namespace IronTuner {
                 ImGui::Separator();
                 if (ImGui::BeginMenu("Pages")) {
                     bool isSelected = false;
-                    for(int id = 0; id < mPages.size(); id++  ) {
+                    for(int id = 0; id < (int)mPages.size(); id++  ) {
                         isSelected = id == mTargetPageIndex;
                         std::string shortCut = (id < 9) ? ("ALT " + std::to_string(id + 1)) : "";
                         if (ImGui::MenuItem(mPages[id].getCaption().c_str(), shortCut.c_str(), &isSelected)) {
@@ -1724,34 +1724,34 @@ namespace IronTuner {
 
         //--------- Pages ------------
         // empty page
-        mPages.emplace_back("Relax", nullptr, mPages.size());
+        mPages.emplace_back("Relax", nullptr, (int)mPages.size());
 
-        // radio pnly
-        mTopScrollerIgnorePages.push_back(mPages.size()); //1
-        mPages.emplace_back("Radio", [this]() { DrawRadio(); }, mPages.size());
+        // radio only
+        mTopScrollerIgnorePages.push_back((int)mPages.size()); //1
+        mPages.emplace_back("Radio", [this]() { DrawRadio(); }, (int)mPages.size());
 
         // rack on desktop / Equalizer9Band on android
         if (!isAndroidBuild()) {
-            mTopScrollerIgnorePages.push_back(mPages.size());
+            mTopScrollerIgnorePages.push_back((int)mPages.size());
             mPages.emplace_back("Rack", [this]() {
                 DrawRadio();
                 DrawEqualizer();
                 DrawRecorder();
-            }, mPages.size());
+            }, (int)mPages.size());
         } else {
-            mPages.emplace_back("Equalizer", [this]() { DrawEqualizer(); }, mPages.size());
+            mPages.emplace_back("Equalizer", [this]() { DrawEqualizer(); }, (int)mPages.size());
         }
 
 
-        mPages.emplace_back("Favorites", [this]() { DrawFavo(); }, mPages.size());
-        mPages.emplace_back("Station Search", [this]() { DrawRadioBrowserWindow(); }, mPages.size());
+        mPages.emplace_back("Favorites", [this]() { DrawFavo(); }, (int)mPages.size());
+        mPages.emplace_back("Station Search", [this]() { DrawRadioBrowserWindow(); }, (int)mPages.size());
 
-        mPages.emplace_back("Info", [this]() { DrawInfo(); }, mPages.size());
+        mPages.emplace_back("Info", [this]() { DrawInfo(); }, (int)mPages.size());
 
 
         setImGuiScale(getMain()->getAppSettings().Scale);
         mTargetPageIndex =  getMain()->getAppSettings().PageIndex;
-        if (mTargetPageIndex >= mPages.size()) mTargetPageIndex = 1;
+        if (mTargetPageIndex >= (int)mPages.size()) mTargetPageIndex = 1;
 
         //--------- check for virtual keyboard ------------
 
@@ -1841,7 +1841,7 @@ namespace IronTuner {
             mPageWindowFocused = mPages[mTargetPageIndex].isFocused();
             lastPageIndex = mTargetPageIndex;
         } else {
-            for (int i = 0; i < mPages.size(); i++) {
+            for (int i = 0; i < (int)mPages.size(); i++) {
                 float xPos = mCurrentScrollX + (i * screenWidth);
                 if (xPos + screenWidth < -10.0f || xPos > screenWidth + 10.0f) continue;
                 ImVec2 Pos = ImVec2(xPos, startY);

@@ -9,7 +9,7 @@ In this Project I use:
 - Framework: [OhmFlux](https://github.com/ohmtal/OhmFlux)
 - Backend: [SDL3](https://www.libsdl.org/)
 - Gui: [Dear ImGui](https://github.com/ocornut/imgui)
-- Https handling: [libCurl](https://curl.se/libcurl/)
+- Http handling: [libCurl](https://curl.se/libcurl/)
 - MP3 Decoder: [miniaudio](https://github.com/mackron/miniaudio)
 - Development
     - IDE/Text: [KDevelop](https://kdevelop.org/), [Kate](https://apps.kde.org/kate/)
@@ -18,7 +18,4 @@ In this Project I use:
 - Database [RadioBrowser](https://www.radio-browser.info/)
     
 
-Limitation: 
-- Only MP3 streams.
-- Android Build does not support SSL - only http can be used so far 
-
+- FIXME: static link curl (http only) also on windows. Else it uses SSL/crypt and i get false positives on virus total. 
