@@ -61,7 +61,7 @@ namespace FluxRadio {
 
         mUserAgent = userAgent;
 
-        if (isAndroidBuild())
+        // if (isAndroidBuild())
         {
             mProto = "http://";
         }

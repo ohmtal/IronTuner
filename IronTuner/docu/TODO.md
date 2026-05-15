@@ -4,7 +4,7 @@
 - [ ] RadioBrowser
     - [ ] redesign search with a big input switching then to list 
         - [ ] most popular by tag 
-- [ ] tune => mark current 
+- [X] tune => mark current 
 
 - [X] scheduled reconnect on error 56 (network gone / android wlan)
 - [ ] notifies android 

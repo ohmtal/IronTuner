@@ -36,7 +36,8 @@ namespace FluxRadio {
         // ---------------------------------------------------------------------
     protected:
         std::string mUserAgent = "FluxRadioClass/1.0";
-        std::string mHostname = "de1.api.radio-browser.info";
+        // std::string mHostname = "de1.api.radio-browser.info";
+        std::string mHostname = "all.api.radio-browser.info";
         std::string mProto = "https://";
 
         enum class RequestType { NONE, SEARCH, CLICK };

@@ -1259,7 +1259,10 @@ namespace IronTuner {
                 if (ImGui::BeginMenu("Tune")) {
                     for (const auto* s : mStations.getSortedStations()) {
                         std::string label = FluxStr::truncate(s->name, 35) + "##" + s->stationuuid;
-                        if (ImGui::MenuItem(label.c_str())) {
+
+                        bool isSelected = getMain()->getAppSettings().CurrentStation.url == s->url;
+
+                        if (ImGui::MenuItem(label.c_str(), nullptr, &isSelected) ) {
                             Tune(*s);
                             getMain()->getAppSettings().SideBarOpen = false;
                         }

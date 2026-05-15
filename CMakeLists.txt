@@ -160,6 +160,7 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
         "${IRONTUNER_DIR}/src/StationHandler.h"
         "${IRONTUNER_DIR}/src/StationHandler.cpp"
         "${IRONTUNER_DIR}/src/WindowState.h"
+        "${IRONTUNER_DIR}/src/Page.h"
 
         # fluxRadio:
         "${IRONTUNER_DIR}/src/fluxRadio/AudioHandler.h"
