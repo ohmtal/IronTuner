@@ -25,7 +25,7 @@ BEGIN
         // BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName",      "Thomas Hühn\0"
-            VALUE "FileDescription",  "Internet Radio with Spice.\0"
+            VALUE "FileDescription",  "Irön Tuner - Internet Radio with Spice.\0"
             VALUE "FileVersion",      "1.0.0.0\0"
             VALUE "InternalName",     "IronTuner.exe\0"
             VALUE "LegalCopyright",   "Copyright © 2026 Thomas Hühn\0"
