@@ -65,7 +65,7 @@ namespace IronTuner {
         if (mAppGui ) {
             mAppGui->Update(dt);
             if (mBackGroundEffects && getAppSettings().BackGroundRenderId >= 0) {
-                mBackGroundEffects->UpdateLevels(dt, mAppGui->getAudioLevels());
+                mBackGroundEffects->UpdateLevels(dt, mAppGui->getAudioLevels(), mAppGui->isStreamConnected());
 
                 if (getMain()->getFPS() < 15 && gAppStatus.Visible  ) {
                     lowFPSCounter++;

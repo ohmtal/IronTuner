@@ -43,12 +43,15 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
     set(IRONTUNER_DIR "${CMAKE_CURRENT_LIST_DIR}/IronTuner")
 
    if(MSVC)
-        set(RES_FILES "${IRONTUNER_DIR}/res/resources.rc")
+        set(RES_FILES
+            "${IRONTUNER_DIR}/res/resources.rc"
+            "${IRONTUNER_DIR}/res/app.manifest"
+            )
    endif()
 
 
 
-	if(MSVC)
+	if(FALSE AND MSVC)
 		find_package(CURL REQUIRED)
 		list(APPEND PROJECT_LIBS CURL::libcurl)
 		message(STATUS "Added Curl .....")
@@ -97,7 +100,7 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
 		# set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "")
 		# set(HTTP_ONLY ON CACHE INTERNAL "") # i only need http at the moment !
 		# <<<<<<<<<<<<<<<<
-        set(CURL_STATIC_CRT OFF CACHE INTERNAL "")
+        set(CURL_STATIC_CRT ON CACHE INTERNAL "")
 
         set(HTTP_ONLY ON CACHE INTERNAL "")
         set(CURL_DISABLE_COOKIES ON CACHE INTERNAL "")
@@ -140,7 +143,6 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
 
         # list(APPEND PROJECT_LIBS openssl z log)
     endif()
-
 
 
 		list(APPEND PROJECT_LIBS libcurl)
@@ -194,10 +196,11 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
             LINK_FLAGS_RELEASE " /OPT:REF /OPT:ICF"
         )
 
-        target_link_options(IronTuner PRIVATE "/MANIFESTINPUT:${IRONTUNER_DIR}/res/app.manifest")
+        # target_link_options(IronTuner PRIVATE "/MANIFESTINPUT:${IRONTUNER_DIR}/res/app.manifest")
+        # target_sources(IronTuner PRIVATE "${IRONTUNER_DIR}/res/app.manifest")
     endif()
 
 
 elseif(BUILD_IRONTUNER)
-    message(FATAL_ERROR "CURL: EMSCRIPTEN BUILD NOT AVAILABLE!")
+    message(FATAL_ERROR "IRONTUNER: EMSCRIPTEN BUILD NOT AVAILABLE!")
 endif()

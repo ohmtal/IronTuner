@@ -74,10 +74,10 @@ namespace FluxRadio {
            shutdown();
         }
 
-        bool isRunning()    const { return mRunning.load(); }
-        bool isConnected()  const { return mConnected.load(); }
-        bool isConnecting() const { return isRunning() && !isConnected(); }
-        bool isOffline()    const { return !isConnected() && !isRunning(); }
+        const bool isRunning()    const { return mRunning.load(); }
+        const bool isConnected()  const { return mConnected.load(); }
+        const bool isConnecting() const { return isRunning() && !isConnected(); }
+        const bool isOffline()    const { return !isConnected() && !isRunning(); }
 
 
         StreamInfo* getStreamInfo() { return &mStreamInfo; };

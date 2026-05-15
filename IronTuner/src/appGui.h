@@ -117,7 +117,7 @@ namespace IronTuner {
 
         // nonsense autodetect by faceDown!
         // bool mUseVirtualKeyBoard = false;
-        ImFlux::VirtualKeyBoard* mVirtualKeyBoard;
+        ImFlux::VirtualKeyBoard* mVirtualKeyBoard = nullptr;
 
         std::atomic<bool>mIsShuttingDown{false};
 
@@ -135,6 +135,8 @@ namespace IronTuner {
         ImConsole mConsole;
 
         const std::string getCurrentTitle() { return mAudioHandler ? mAudioHandler->getCurrentTitle() : "";}
+
+        const bool isStreamConnected() { return mStreamHandler->isConnected(); }
 
         bool Initialize() override;
         void Deinitialize() override;

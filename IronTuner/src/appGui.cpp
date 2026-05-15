@@ -926,6 +926,7 @@ namespace IronTuner {
             while (clipper.Step()) {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++) {
                     const auto* station = displayList[row];
+                    if (!station) continue;
 
                     ImGui::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
                     ImGui::PushID((station->stationuuid + "#" +  std::to_string(row)).c_str());

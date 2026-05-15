@@ -183,15 +183,16 @@ namespace IronTuner {
             SAFE_DELETE(mShader);
         }
         //----------------------------------------------------------------------
-        void UpdateLevels(const double& dt, const Point2F audioLevels)  {
+        void UpdateLevels(const double& dt, const Point2F audioLevels, const bool isConnected)  {
             mTotalTime += static_cast<float>(dt);
             mRmsL = audioLevels.x;
             mRmsR = audioLevels.y;
 
 
+            if (!isConnected) {
+                std::fill(mSmoothedMags.begin(), mSmoothedMags.end(), 0.0f);
+            } else if ( mAnalyzer ) {
 
-            if ( mAnalyzer )
-            {
                 auto currentBands = mAnalyzer->getLogarithmicBands(mFreqCount, true, 0.5f);
                 if (!currentBands.empty()) {
                     // Initialize smoothed vector if needed
