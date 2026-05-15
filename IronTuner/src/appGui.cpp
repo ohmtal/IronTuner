@@ -203,7 +203,7 @@ namespace IronTuner {
 
         mAudioHandler->reset();
         mStreamHandler->Execute(url);
-        if (!getMain()->getAppSettings().CurrentStation.stationuuid.empty()) mRadioBrowser->clickStation(getMain()->getAppSettings().CurrentStation.stationuuid);
+        //moved to Tune if (!getMain()->getAppSettings().CurrentStation.stationuuid.empty()) mRadioBrowser->clickStation(getMain()->getAppSettings().CurrentStation.stationuuid);
         return true;
     }
     // -----------------------------------------------------------------------------
@@ -212,6 +212,8 @@ namespace IronTuner {
 
         mStations.addStation(&station);
         mStations.incClick(&station);
+        if (!getMain()->getAppSettings().CurrentStation.stationuuid.empty()) mRadioBrowser->clickStation(getMain()->getAppSettings().CurrentStation.stationuuid);
+
         ConnectCurrent();
         mTuningMode = false;
         mReconnectOnTimeOutCount = 0;
@@ -1618,6 +1620,8 @@ namespace IronTuner {
 
         mStreamHandler->OnError = [&](const uint16_t errorCode, const std::string errorMsg) {
 
+            // CURLE_OPERATION_TIMEDOUT,      /* 28 - the timeout time was reached */
+            // CURLE_RECV_ERROR,              /* 56 - failure in receiving network data */
             bool reconnect =  errorCode == 28 || errorCode == 56 ;
 
             if ( getMain()->getAppSettings().CurrentStation.clickcount > 1 && errorCode == 6 ) reconnect = true;
