@@ -20,10 +20,10 @@ vec3 hsv2rgb(vec3 c) {
 
 // ---------------------- HORIZONTAL BARS VERY SIMPLE -----------------------
 
-const float BAR_WIDTH = 0.6;
-const float BAR_HEIGHT = 0.05;
+const float BAR_WIDTH = 0.4;
+const float BAR_HEIGHT = 0.04;
 const float BAR_GAP = 0.01;
-const float LED_COUNT = 50.0;
+const float LED_COUNT = 30.0;
 const float LED_GAP = 0.15;
 
 void main() {
@@ -33,7 +33,7 @@ void main() {
     vec3 finalColor = vec3(0.0);
     //...........
     float backHue = fract(u_time * 0.05);
-    finalColor = hsv2rgb(vec3(backHue, 0.5, /*0.6 + rms *0.2*/ 0.7  ));
+    finalColor = hsv2rgb(vec3(backHue, 0.7, 0.3 + rms * 0.3  ));
     //...........
 
     if ( rms == 0.0 )
@@ -41,11 +41,11 @@ void main() {
         // no signal ;)
         float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );
         finalColor += noise * 0.2;
-    } else {
+    } else  {
         float startX = (1.0 - BAR_WIDTH) * 0.5;
         float endX = startX + BAR_WIDTH;
 
-        float centerY = 0.2;
+        float centerY = 0.1;
         float bottomBarL = centerY + (BAR_GAP * 0.5);
         float topBarL = bottomBarL + BAR_HEIGHT;
         float topBarR = centerY - (BAR_GAP * 0.5);
@@ -56,17 +56,17 @@ void main() {
 
             float progressX = (uv.x - startX) / BAR_WIDTH;
             float ledIndex = floor(progressX * LED_COUNT) / LED_COUNT;
-            float ledFract = fract(progressX * LED_COUNT);
+            float ledFract = fract(progressX * LED_COUNT) ;
 
             if (ledFract > LED_GAP) {
 
                 vec3 ledColor = vec3(0.0);
                 if (ledIndex < 0.6) {
-                    ledColor = vec3(0.0, 1.0, 0.0);
+                    ledColor = vec3(0.0, 0.8, 0.0);
                 } else if (ledIndex < 0.85) {
-                    ledColor = vec3(1.0, 1.0, 0.0);
+                    ledColor = vec3(0.8, 0.8, 0.0);
                 } else {
-                    ledColor = vec3(1.0, 0.0, 0.0);
+                    ledColor = vec3(0.8, 0.0, 0.0);
                 }
 
                 if (uv.y >= bottomBarL && uv.y <= topBarL) {
@@ -88,10 +88,12 @@ void main() {
         }
     }
 
+
     //...........
     float vignette = distance(uv, vec2(0.5));
-    float edgeStart =  0.7;
-    float edgeEnd = clamp(0.4 + (rms * 0.2), 0.0, 0.75);
+    float edgeStart =  0.7; // 0.7;
+//     float edgeEnd = clamp(0.4 + (rms * 0.2), 0.0, 0.75);
+    float edgeEnd = clamp(0.2 + (u_freqs[0] * 0.2), 0.0, 0.75);
     finalColor *= smoothstep(edgeStart, edgeEnd, vignette);
 
     //...........
