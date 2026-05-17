@@ -33,7 +33,7 @@ void main() {
 
 
     // --- Bars (Wide Version) ---
-    float aspect = u_res.x / u_res.y;
+//     float aspect = u_res.x / u_res.y;
     float barAreaWidth = 1.8; // Total width of the spectrum display
     float xPos = uv.x + (barAreaWidth * 0.5);
 

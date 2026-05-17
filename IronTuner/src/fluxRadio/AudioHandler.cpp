@@ -36,9 +36,15 @@ namespace FluxRadio {
         if (!self || !self->mStreamInfo || self->mDecoderPause.load()) return;
 
         int channels = self->mStreamInfo->channels;
+
+        // const float cacheSec = 0.100f; //was 0.1 => 100
+        // const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
+        // size_t samplesNeeded = std::max(additional_amount, targetQueueSize) / sizeof(float);
+
         size_t samplesNeeded = additional_amount / sizeof(float);
 
-        std::vector<float> pcmBuffer(samplesNeeded);
+        static std::vector<float> pcmBuffer(samplesNeeded);
+        if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
 
         // new ringbuffer :D
         size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
