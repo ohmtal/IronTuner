@@ -1,6 +1,10 @@
 
 ## Todos
 
+- [ ] AudioHandler 
+    - [ ] switch to push
+    - [ ] visual data: add postmix 
+
 - [ ] RadioBrowser
     - [ ] redesign search with a big input switching then to list 
         - [ ] most popular by tag 
