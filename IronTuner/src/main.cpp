@@ -20,11 +20,14 @@ int main(int argc, char* argv[])
 {
     (void)argc; (void)argv;
 
-    // 8192 should be best for the radio ?! NOT ..
+    // set the frames - on ubuntu a higher frame is required than on other system
     // if (isAndroidBuild()) SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
     // else SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, /*"8192"*/ /*"2048" */ "4096");
+
     SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
 
+
+    // ~~~~~ background playing on android ~~~~~
     SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE, "0");
 
 
