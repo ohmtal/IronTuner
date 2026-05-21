@@ -65,6 +65,7 @@ namespace FluxRadio {
         void populateRack(DSP::EffectsRack* lRack);
 
 
+
     public:
         AudioHandler();
         ~AudioHandler() {
@@ -78,6 +79,9 @@ namespace FluxRadio {
 
         void RenderRack(int mode = 0);
         DSP::EffectsManager* getManager() const { return mEffectsManager.get();}
+
+        std::unique_ptr<DSP::SpectrumAnalyzer> mSpectrumAnalyzer = nullptr;
+        std::unique_ptr<DSP::VisualAnalyzer> mVisualAnalyzer = nullptr;
 
 
         float getVolume() {return mVolume.load(); }
@@ -131,7 +135,7 @@ namespace FluxRadio {
         void Update(const double& dt, const bool isConnected, const bool visible);
 
     private:
-        // static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
+        static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
         static ma_result OnReadFromRawBuffer(ma_decoder* pDecoder, void* pBufferOut, size_t bytesToRead, size_t* pBytesRead);
         static ma_result OnSeekDummy(ma_decoder* pDecoder, ma_int64 byteOffset, ma_seek_origin origin);
 

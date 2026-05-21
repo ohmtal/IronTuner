@@ -83,9 +83,6 @@ namespace IronTuner {
         std::unique_ptr<FluxRadio::RadioBrowser> mRadioBrowser;
 
 
-        std::unique_ptr<DSP::SpectrumAnalyzer> mSpectrumAnalyzer = nullptr;
-        std::unique_ptr<DSP::VisualAnalyzer> mVisualAnalyzer = nullptr;
-
 
         StationHandler mStations;
 
@@ -129,8 +126,8 @@ namespace IronTuner {
 
     public:
         Point2F getAudioLevels() const;
-        DSP::VisualAnalyzer* getVisualAnalyzer() { return mVisualAnalyzer.get();}
-        DSP::SpectrumAnalyzer* getSpectrumAnalyzer() { return mSpectrumAnalyzer.get();}
+        DSP::VisualAnalyzer* getVisualAnalyzer() { return mAudioHandler->mVisualAnalyzer.get();}
+        DSP::SpectrumAnalyzer* getSpectrumAnalyzer() { return mAudioHandler->mSpectrumAnalyzer.get();}
 
         FluxTexture* mBrushedMetalTex = nullptr;
         FluxTexture* mKnobSilverTex = nullptr;

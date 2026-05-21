@@ -31,48 +31,52 @@ namespace FluxRadio {
     }
 
     // -----------------------------------------------------------------------------
-//     void SDLCALL AudioHandler::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
-//         auto* self = static_cast<AudioHandler*>(userdata);
-//         if (!self || !self->mStreamInfo || self->mDecoderPause.load()) return;
-//
-//         int channels = self->mStreamInfo->channels;
-//
-//
-//         size_t samplesNeeded = additional_amount / sizeof(float);
-//
-//         static std::vector<float> pcmBuffer(samplesNeeded);
-//         if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
-//
-//         // new ringbuffer :D
-//         size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
-//
-//         if (samplesRead > 0) {
-//
-//             float vol = self->mVolume.load();
-//
-//             for (size_t i = 0; i < samplesRead; i++) {
-//                 if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
-//                     pcmBuffer[i] = 0.f;
-//                     self->mFadeInSamplesProcessed++;
-//                 } else {
-//                     pcmBuffer[i] = self->mVolProcessor.process(pcmBuffer[i], vol, false);
-//                 }
-//
-//             }
-//
-//             if (self->mEffectsManager) {
-//                 self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
-//             }
-//
-//             SDL_PutAudioStreamData(stream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
-//         }
-//
-//         if (samplesRead < samplesNeeded) {
-//             size_t missingSamples = samplesNeeded - samplesRead;
-//             std::vector<float> silence(missingSamples, 0.0f);
-//             SDL_PutAudioStreamData(stream, silence.data(), (int)(missingSamples * sizeof(float)));
-//         }
-//     }
+    void SDLCALL AudioHandler::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
+        auto* self = static_cast<AudioHandler*>(userdata);
+        if (!self || !self->mStreamInfo || self->mDecoderPause.load()) return;
+
+        int channels = self->mStreamInfo->channels;
+
+
+        size_t samplesNeeded = additional_amount / sizeof(float);
+
+        static std::vector<float> pcmBuffer(samplesNeeded);
+        if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
+
+        // new ringbuffer :D
+        size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
+
+        if (samplesRead > 0) {
+
+            float vol = self->mVolume.load();
+
+            for (size_t i = 0; i < samplesRead; i++) {
+                if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
+                    pcmBuffer[i] = 0.f;
+                    self->mFadeInSamplesProcessed++;
+                } else {
+                    pcmBuffer[i] *= vol;
+                }
+
+            }
+
+            if (self->mEffectsManager) {
+                self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
+            }
+            if (gAppStatus.Visible) {
+                self->mSpectrumAnalyzer->process(pcmBuffer.data(), (int)samplesRead, channels);
+                self->mVisualAnalyzer->process(pcmBuffer.data(), (int)samplesRead, channels);
+            }
+
+            SDL_PutAudioStreamData(stream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
+        }
+
+        if (samplesRead < samplesNeeded) {
+            size_t missingSamples = samplesNeeded - samplesRead;
+            std::vector<float> silence(missingSamples, 0.0f);
+            SDL_PutAudioStreamData(stream, silence.data(), (int)(missingSamples * sizeof(float)));
+        }
+    }
     // -----------------------------------------------------------------------------
     bool AudioHandler::init(StreamInfo* info) {
 
@@ -174,7 +178,7 @@ namespace FluxRadio {
                 return false;
             }
 
-            // SDL_SetAudioStreamGetCallback(mStream, AudioHandler::audio_callback, this);
+            SDL_SetAudioStreamGetCallback(mStream, AudioHandler::audio_callback, this);
 
 
             #if defined(FLUX_ENGINE) && !defined(FLUX_ENGINE_FAKE)
@@ -354,6 +358,17 @@ namespace FluxRadio {
                 lRack->getEffects().push_back(std::move(fx));
             }
         }
+
+        mSpectrumAnalyzer = cast_unique<DSP::SpectrumAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::SpectrumAnalyzer));
+        if (mSpectrumAnalyzer) { //if not we are in trouble !
+            mSpectrumAnalyzer->setFFTSize(512); //default 512
+            mSpectrumAnalyzer->setEnabled(true);
+
+        }
+        mVisualAnalyzer = cast_unique<DSP::VisualAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::VisualAnalyzer));
+        mVisualAnalyzer->setEnabled(true);
+
+
     }
     // -----------------------------------------------------------------------------
     void AudioHandler::RenderRack(int mode){
@@ -414,50 +429,52 @@ namespace FluxRadio {
     // -----------------------------------------------------------------------------
     // 2026-05-21 push test - FIXME put in thead .. but not on the flappy laptop
     void AudioHandler::Update(const double& dt, const bool isConnected, const bool visible) {
-        auto* self = this;
-        if ( !isConnected || !self->mStreamInfo || self->mDecoderPause) return;
 
-        int channels = self->mStreamInfo->channels;
-
-        // less is better for visualizr!
-
-        // const float cacheSec = 0.05; //was 0.1 => 100, also 50 did work fine on desktop but failed on background android
-        // const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
-
-
-
-        // int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.070f : 0.25f));
-        const int targetQueueSize = (int)( 44100 * 2 * sizeof(float) * 0.25f );
-        if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
-
-            size_t samplesNeeded =  targetQueueSize / sizeof(float);
-
-
-            static std::vector<float> pcmBuffer(samplesNeeded);
-            if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
-
-            //  ringbuffer
-            size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
-
-            if (samplesRead > 0) {
-
-                float vol = self->mVolume.load();
-
-                for (size_t i = 0; i < samplesRead; i++) {
-                    if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
-                        pcmBuffer[i] = 0.f;
-                        self->mFadeInSamplesProcessed++;
-                    } else {
-                        pcmBuffer[i] *= vol;
-                    }
-                }
-                if (self->mEffectsManager) {
-                    self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
-                }
-
-                SDL_PutAudioStreamData(mStream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
-            }
-        }
+        // ROLLBACK AGAIN!
+        // auto* self = this;
+        // if ( !isConnected || !self->mStreamInfo || self->mDecoderPause) return;
+        //
+        // int channels = self->mStreamInfo->channels;
+        //
+        // // less is better for visualizr!
+        //
+        // // const float cacheSec = 0.05; //was 0.1 => 100, also 50 did work fine on desktop but failed on background android
+        // // const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
+        //
+        //
+        //
+        // // int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.070f : 0.25f));
+        // const int targetQueueSize = (int)( 44100 * 2 * sizeof(float) * 0.25f );
+        // if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
+        //
+        //     size_t samplesNeeded =  targetQueueSize / sizeof(float);
+        //
+        //
+        //     static std::vector<float> pcmBuffer(samplesNeeded);
+        //     if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
+        //
+        //     //  ringbuffer
+        //     size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
+        //
+        //     if (samplesRead > 0) {
+        //
+        //         float vol = self->mVolume.load();
+        //
+        //         for (size_t i = 0; i < samplesRead; i++) {
+        //             if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
+        //                 pcmBuffer[i] = 0.f;
+        //                 self->mFadeInSamplesProcessed++;
+        //             } else {
+        //                 pcmBuffer[i] *= vol;
+        //             }
+        //         }
+        //         if (self->mEffectsManager) {
+        //             self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
+        //         }
+        //
+        //         SDL_PutAudioStreamData(mStream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
+        //     }
+        // }
 
     }
     // -----------------------------------------------------------------------------

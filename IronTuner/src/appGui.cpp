@@ -170,30 +170,6 @@ namespace IronTuner {
     }
 
 
-    //------------------------------------------------------------------------------
-    // Final Postmix for specturm and visual analyzer
-    //------------------------------------------------------------------------------
-    void SDLCALL FinalMixCallback(void *userdata, const SDL_AudioSpec *spec, float *buffer, int buflen) {
-        if (!userdata || !spec || !buffer || buflen < 1) return;
-        auto* self = static_cast<AppGui*>(userdata);
-
-        if (!self || !gAppStatus.Visible) return;
-
-
-        if ( spec->format == SDL_AUDIO_F32 )
-        {
-            if (buflen > 0)
-            {
-                int numSamples = buflen / sizeof(float);
-
-                // analyzer
-                self->getSpectrumAnalyzer()->process(buffer, numSamples, spec->channels);
-                self->getVisualAnalyzer()->process(buffer, numSamples, spec->channels);
-            }
-        }
-
-    }
-
     // -----------------------------------------------------------------------------
     Point2F AppGui::getAudioLevels() const{
         return mAudioLevels;
@@ -1620,24 +1596,6 @@ namespace IronTuner {
         mAudioHandler  = std::make_unique<FluxRadio::AudioHandler>();
         mAudioRecorder = std::make_unique<FluxRadio::AudioRecorder>();
         mRadioBrowser  = std::make_unique<FluxRadio::RadioBrowser>("IronTuner/1.0");
-
-
-        mSpectrumAnalyzer = cast_unique<DSP::SpectrumAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::SpectrumAnalyzer));
-        if (mSpectrumAnalyzer) { //if not we are in trouble !
-            mSpectrumAnalyzer->setFFTSize(1024); //default 512
-            mSpectrumAnalyzer->setEnabled(true);
-
-        }
-        mVisualAnalyzer = cast_unique<DSP::VisualAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::VisualAnalyzer));
-        mVisualAnalyzer->setEnabled(true);
-
-
-        // Setup PostMix
-        if (!SDL_SetAudioPostmixCallback(AudioManager.getDeviceID(), FinalMixCallback, this)) {
-            Log("[error] can NOT open PostMix Device !!! %s", SDL_GetError());
-        } else {
-            Log("[info] SoundMixModule: PostMix Callback installed.");
-        }
 
 
         mAudioHandler->setVolume(getMain()->getAppSettings().Volume); //sync volume
