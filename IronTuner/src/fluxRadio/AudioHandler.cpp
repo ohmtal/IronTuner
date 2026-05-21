@@ -31,51 +31,48 @@ namespace FluxRadio {
 
     }
     // -----------------------------------------------------------------------------
-    void SDLCALL AudioHandler::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
-        auto* self = static_cast<AudioHandler*>(userdata);
-        if (!self || !self->mStreamInfo || self->mDecoderPause.load()) return;
-
-        int channels = self->mStreamInfo->channels;
-
-        // const float cacheSec = 0.100f; //was 0.1 => 100
-        // const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
-        // size_t samplesNeeded = std::max(additional_amount, targetQueueSize) / sizeof(float);
-
-        size_t samplesNeeded = additional_amount / sizeof(float);
-
-        static std::vector<float> pcmBuffer(samplesNeeded);
-        if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
-
-        // new ringbuffer :D
-        size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
-
-        if (samplesRead > 0) {
-
-            float vol = self->mVolume.load();
-
-            for (size_t i = 0; i < samplesRead; i++) {
-                if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
-                    pcmBuffer[i] = 0.f;
-                    self->mFadeInSamplesProcessed++;
-                } else {
-                    pcmBuffer[i] = self->mVolProcessor.process(pcmBuffer[i], vol, false);
-                }
-
-            }
-
-            if (self->mEffectsManager) {
-                self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
-            }
-
-            SDL_PutAudioStreamData(stream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
-        }
-
-        if (samplesRead < samplesNeeded) {
-            size_t missingSamples = samplesNeeded - samplesRead;
-            std::vector<float> silence(missingSamples, 0.0f);
-            SDL_PutAudioStreamData(stream, silence.data(), (int)(missingSamples * sizeof(float)));
-        }
-    }
+//     void SDLCALL AudioHandler::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
+//         auto* self = static_cast<AudioHandler*>(userdata);
+//         if (!self || !self->mStreamInfo || self->mDecoderPause.load()) return;
+//
+//         int channels = self->mStreamInfo->channels;
+//
+//
+//         size_t samplesNeeded = additional_amount / sizeof(float);
+//
+//         static std::vector<float> pcmBuffer(samplesNeeded);
+//         if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
+//
+//         // new ringbuffer :D
+//         size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
+//
+//         if (samplesRead > 0) {
+//
+//             float vol = self->mVolume.load();
+//
+//             for (size_t i = 0; i < samplesRead; i++) {
+//                 if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
+//                     pcmBuffer[i] = 0.f;
+//                     self->mFadeInSamplesProcessed++;
+//                 } else {
+//                     pcmBuffer[i] = self->mVolProcessor.process(pcmBuffer[i], vol, false);
+//                 }
+//
+//             }
+//
+//             if (self->mEffectsManager) {
+//                 self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
+//             }
+//
+//             SDL_PutAudioStreamData(stream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
+//         }
+//
+//         if (samplesRead < samplesNeeded) {
+//             size_t missingSamples = samplesNeeded - samplesRead;
+//             std::vector<float> silence(missingSamples, 0.0f);
+//             SDL_PutAudioStreamData(stream, silence.data(), (int)(missingSamples * sizeof(float)));
+//         }
+//     }
     // -----------------------------------------------------------------------------
     bool AudioHandler::init(StreamInfo* info) {
 
@@ -177,7 +174,7 @@ namespace FluxRadio {
                 return false;
             }
 
-            SDL_SetAudioStreamGetCallback(mStream, AudioHandler::audio_callback, this);
+            // SDL_SetAudioStreamGetCallback(mStream, AudioHandler::audio_callback, this);
 
             #if defined(FLUX_ENGINE) && !defined(FLUX_ENGINE_FAKE)
             AudioManager.bindStream(mStream);
@@ -416,5 +413,51 @@ namespace FluxRadio {
             (int)mDecoderThreadRunning
         );
     }
+    // -----------------------------------------------------------------------------
+    // 2026-05-21 push test
+    void AudioHandler::Update(const double& dt, bool isConnected) {
+        auto* self = this;
+        if ( !self->mStreamInfo || self->mDecoderPause) return;
+
+        int channels = self->mStreamInfo->channels;
+
+        const float cacheSec = 0.050f; //was 0.1 => 100
+        const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
+        if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
+
+            size_t samplesNeeded =  targetQueueSize / sizeof(float);
+
+
+            static std::vector<float> pcmBuffer(samplesNeeded);
+            if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
+
+            //  ringbuffer :D
+            size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
+
+            if (samplesRead > 0) {
+
+                float vol = self->mVolume.load();
+
+                for (size_t i = 0; i < samplesRead; i++) {
+                    if ( self->mFadeInSamplesProcessed < self->FADE_IN_DURATION) {
+                        pcmBuffer[i] = 0.f;
+                        self->mFadeInSamplesProcessed++;
+                    } else {
+                        pcmBuffer[i] = self->mVolProcessor.process(pcmBuffer[i], vol, false);
+                    }
+
+                }
+
+                if (self->mEffectsManager) {
+                    self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
+                }
+
+                SDL_PutAudioStreamData(mStream, pcmBuffer.data(), (int)(samplesRead * sizeof(float)));
+            }
+        }
+
+    }
+    // -----------------------------------------------------------------------------
+
 }; //namespace
 

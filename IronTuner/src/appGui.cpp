@@ -616,17 +616,28 @@ namespace IronTuner {
     // -----------------------------------------------------------------------------
     void AppGui::Update(const double& dt){
 
-        if ( mAudioHandler->getManager()) {
-            bool isConnected = mStreamHandler->isConnected();
-            if (mAudioHandler->getManager()->getVisualAnalyzer()) {
-                if (isConnected) {
-                    mAudioLevels.x = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(0);
-                    mAudioLevels.y = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(1);
-                } else {
-                    mAudioLevels = {0.f, 0.f};
-                }
-            }
+        // if ( mAudioHandler->getManager()) {
+        //     bool isConnected = mStreamHandler->isConnected();
+        //     if (mAudioHandler->getManager()->getVisualAnalyzer()) {
+        //         if (isConnected) {
+        //             mAudioLevels.x = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(0);
+        //             mAudioLevels.y = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(1);
+        //         } else {
+        //             mAudioLevels = {0.f, 0.f};
+        //         }
+        //     }
+        // }
+
+        bool isConnected = mStreamHandler->isConnected();
+        if (isConnected) {
+            mAudioLevels.x = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(0);
+            mAudioLevels.y = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(1);
+        } else {
+            mAudioLevels = {0.f, 0.f};
         }
+        mAudioHandler->Update(dt, isConnected);
+
+
 
 
         mStations.update();

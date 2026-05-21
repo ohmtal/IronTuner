@@ -20,12 +20,13 @@ int main(int argc, char* argv[])
 {
     (void)argc; (void)argv;
 
+    //NOTE obsolete i do push now !
     // set the frames - on ubuntu a higher frame is required than on other system
     // if (isAndroidBuild()) SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
     // else SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, /*"8192"*/ /*"2048" */ "4096");
 
     // did run well on arch/android/freebsd but then i tested on ubuntu ^^
-    SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
+    // SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
 
 
     // ~~~~~ background playing on android ~~~~~

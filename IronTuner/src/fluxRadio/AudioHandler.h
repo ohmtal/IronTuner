@@ -15,9 +15,15 @@
 #include <chrono>
 #include <functional>
 #include <deque>
-#include "DSP.h"
+// #include "DSP.h"
+#include "DSP_Effect.h"
+#include "DSP_tools.h"
 #include "DSP_EffectsManager.h"
-#include "dsp/MonoProcessors/Volume.h"
+#include "MonoProcessors/Volume.h"
+#include "DSP_Equalizer9Band.h"
+#include "DSP_SpectrumAnalyzer.h"
+#include "DSP_VisualAnalyzer.h"
+
 #include "utils/byteEncoder.h"
 #include "audio/fluxAudioBuffer.h"
 
@@ -125,6 +131,7 @@ namespace FluxRadio {
 
         void decoderDebug( );
 
+        void Update(const double& dt, bool isConnected);
 
     private:
         static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
