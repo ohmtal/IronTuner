@@ -93,6 +93,8 @@ namespace IronTuner {
             , {"Caustics.frag"       , "Caustics"                , true}   // 12
             , {"starfield.frag"      , "Neon Starfield"          , true}   // 13
             , {"neonwave.frag"       , "Neon Wave"               , false}   // 14
+            , {"VuLED.frag"          , "LED VU"                  , false}   // 15
+            , {"Colored.frag"        , "Pulse Color"             , false}   // 16
 
             #ifdef FLUX_DEBUG
             , {"test.frag"           , "Test"                    , true}
