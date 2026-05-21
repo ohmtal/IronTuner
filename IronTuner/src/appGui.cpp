@@ -19,6 +19,8 @@
 #include "core/fluxInput.h"
 
 
+#include "audio/fluxAudio.h"
+
 #ifdef __ANDROID__
 #include <jni.h>
 #include <SDL3/SDL_system.h>
@@ -86,6 +88,8 @@ namespace IronTuner {
         Log("[info] %s", message.c_str());
         #endif
     }
+
+
 
 
     // -----------------------------------------------------------------------------
@@ -166,13 +170,30 @@ namespace IronTuner {
     }
 
 
-    // -----------------------------------------------------------------------------
-    DSP::SpectrumAnalyzer* AppGui::getSpectrumAnalyzer(){
-        if ( mAudioHandler->getManager() && mAudioHandler->getManager()->getSpectrumAnalyzer()) {
-            return mAudioHandler->getManager()->getSpectrumAnalyzer();
+    //------------------------------------------------------------------------------
+    // Final Postmix for specturm and visual analyzer
+    //------------------------------------------------------------------------------
+    void SDLCALL FinalMixCallback(void *userdata, const SDL_AudioSpec *spec, float *buffer, int buflen) {
+        if (!userdata || !spec || !buffer || buflen < 1) return;
+        auto* self = static_cast<AppGui*>(userdata);
+
+        if (!self || !gAppStatus.Visible) return;
+
+
+        if ( spec->format == SDL_AUDIO_F32 )
+        {
+            if (buflen > 0)
+            {
+                int numSamples = buflen / sizeof(float);
+
+                // analyzer
+                self->getSpectrumAnalyzer()->process(buffer, numSamples, spec->channels);
+                self->getVisualAnalyzer()->process(buffer, numSamples, spec->channels);
+            }
         }
-        return nullptr;
+
     }
+
     // -----------------------------------------------------------------------------
     Point2F AppGui::getAudioLevels() const{
         return mAudioLevels;
@@ -400,7 +421,7 @@ namespace IronTuner {
     }
     // -----------------------------------------------------------------------------
     void AppGui::DrawRecorder(){
-        if (!mStreamHandler.get() || !mAudioHandler.get() || !mAudioHandler->getManager()) return;
+        if (!mStreamHandler.get() || !mAudioHandler.get() ) return;
         float fullHalfWidth = ImGui::GetContentRegionAvail().x / 2.f;
         const float radioHalfWidth = 320.f * getScale(); //FIXME !!
 
@@ -466,7 +487,7 @@ namespace IronTuner {
     }
     // -----------------------------------------------------------------------------
     void AppGui::DrawEqualizer(){
-        if (!mStreamHandler.get() || !mAudioHandler.get() || !mAudioHandler->getManager()) return;
+        if (!mStreamHandler.get() || !mAudioHandler.get() ) return;
         float fullHalfWidth = ImGui::GetContentRegionAvail().x / 2.f;
         const float radioHalfWidth = 320.f * getScale(); //FIXME !!
 
@@ -492,9 +513,9 @@ namespace IronTuner {
 
         float cursorY = ImGui::GetCursorPosY();
         // ~~~ VU Meter LEFT ~~~
-        if ( mAudioHandler->getManager() && mAudioHandler->getManager()->getVisualAnalyzer()) {
+        if (mAudioHandler ) {
             if (!mStreamHandler->isConnected()) dbL = 0.f;
-            else  dbL = mapDB(mAudioHandler->getManager()->getVisualAnalyzer()->getDecible(0));
+            else  dbL = mapDB(getVisualAnalyzer()->getDecible(0));
             ImGui::SetCursorPosY(cursorY + 20.f);
             ImFlux::VUMeter70th(vuSize,dbL, "L",  gRadioDisplayBox.col_top, gRadioDisplayBox.col_bot);
 
@@ -582,9 +603,10 @@ namespace IronTuner {
         //--------- <<< EQ9
 
         ImGui::SameLine();
-        if ( mAudioHandler->getManager() && mAudioHandler->getManager()->getVisualAnalyzer()) {
+
+        if ( mAudioHandler ) {
             if (!mStreamHandler->isConnected()) dbR = 0.f;
-            else dbR = mapDB(mAudioHandler->getManager()->getVisualAnalyzer()->getDecible(0));
+            else dbR = mapDB(getVisualAnalyzer()->getDecible(0));
             ImGui::SetCursorPosY(cursorY + 20.f);
             ImFlux::VUMeter70th(vuSize,dbR, "R", gRadioDisplayBox.col_top, gRadioDisplayBox.col_bot);
         }
@@ -616,35 +638,17 @@ namespace IronTuner {
     // -----------------------------------------------------------------------------
     void AppGui::Update(const double& dt){
 
-        // if ( mAudioHandler->getManager()) {
-        //     bool isConnected = mStreamHandler->isConnected();
-        //     if (mAudioHandler->getManager()->getVisualAnalyzer()) {
-        //         if (isConnected) {
-        //             mAudioLevels.x = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(0);
-        //             mAudioLevels.y = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(1);
-        //         } else {
-        //             mAudioLevels = {0.f, 0.f};
-        //         }
-        //     }
-        // }
-
         bool isConnected = mStreamHandler->isConnected();
         if (isConnected) {
-            mAudioLevels.x = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(0);
-            mAudioLevels.y = mAudioHandler->getManager()->getVisualAnalyzer()->getLevel(1);
+            mAudioLevels.x = getVisualAnalyzer()->getLevel(0);
+            mAudioLevels.y = getVisualAnalyzer()->getLevel(1);
         } else {
             mAudioLevels = {0.f, 0.f};
         }
         mAudioHandler->Update(dt, isConnected, gAppStatus.Visible);
 
-
-
-
+        // -----
         mStations.update();
-
-
-
-
     }
     // -----------------------------------------------------------------------------
 
@@ -761,7 +765,6 @@ namespace IronTuner {
 
             ImGui::BeginGroup();
             {
-                if ( mAudioHandler->getManager() && mAudioHandler->getManager()->getVisualAnalyzer()) {
                     ImGui::SetCursorPos(ImVec2(CursorPos.x, CursorPos.y + displayHeight + 15.f ));
                     ImGui::BeginGroup();
                     if (isConnecting) ImFlux::DrawLED("Connecting",isConnecting, ImFlux::LED_YELLOW);
@@ -771,7 +774,6 @@ namespace IronTuner {
                     ImGui::SameLine();
                     ImFlux::VUMeter80th(mAudioLevels.y, 24, ImVec2(4.f, 16.f));
                     ImGui::EndGroup();
-                }
             }
             ImGui::EndGroup();
 
@@ -1618,6 +1620,25 @@ namespace IronTuner {
         mAudioHandler  = std::make_unique<FluxRadio::AudioHandler>();
         mAudioRecorder = std::make_unique<FluxRadio::AudioRecorder>();
         mRadioBrowser  = std::make_unique<FluxRadio::RadioBrowser>("IronTuner/1.0");
+
+
+        mSpectrumAnalyzer = cast_unique<DSP::SpectrumAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::SpectrumAnalyzer));
+        if (mSpectrumAnalyzer) { //if not we are in trouble !
+            mSpectrumAnalyzer->setFFTSize(1024); //default 512
+            mSpectrumAnalyzer->setEnabled(true);
+
+        }
+        mVisualAnalyzer = cast_unique<DSP::VisualAnalyzer>(DSP::EffectFactory::Create(DSP::EffectType::VisualAnalyzer));
+        mVisualAnalyzer->setEnabled(true);
+
+
+        // Setup PostMix
+        if (!SDL_SetAudioPostmixCallback(AudioManager.getDeviceID(), FinalMixCallback, this)) {
+            Log("[error] can NOT open PostMix Device !!! %s", SDL_GetError());
+        } else {
+            Log("[info] SoundMixModule: PostMix Callback installed.");
+        }
+
 
         mAudioHandler->setVolume(getMain()->getAppSettings().Volume); //sync volume
         std::string emptyStr = "";

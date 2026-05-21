@@ -16,6 +16,7 @@
 #include "utils/fluxScheduler.h"
 #include "utils/errorlog.h"
 
+#include "DSP_SpectrumAnalyzer.h"
 #include "DSP_VisualAnalyzer.h"
 
 #include "fluxRadio/StreamHandler.h"
@@ -81,6 +82,11 @@ namespace IronTuner {
         std::unique_ptr<FluxRadio::AudioRecorder> mAudioRecorder;
         std::unique_ptr<FluxRadio::RadioBrowser> mRadioBrowser;
 
+
+        std::unique_ptr<DSP::SpectrumAnalyzer> mSpectrumAnalyzer = nullptr;
+        std::unique_ptr<DSP::VisualAnalyzer> mVisualAnalyzer = nullptr;
+
+
         StationHandler mStations;
 
         std::vector<Page> mPages;
@@ -123,7 +129,8 @@ namespace IronTuner {
 
     public:
         Point2F getAudioLevels() const;
-        DSP::SpectrumAnalyzer* getSpectrumAnalyzer();
+        DSP::VisualAnalyzer* getVisualAnalyzer() { return mVisualAnalyzer.get();}
+        DSP::SpectrumAnalyzer* getSpectrumAnalyzer() { return mSpectrumAnalyzer.get();}
 
         FluxTexture* mBrushedMetalTex = nullptr;
         FluxTexture* mKnobSilverTex = nullptr;

@@ -17,12 +17,8 @@
 #include <deque>
 // #include "DSP.h"
 #include "DSP_Effect.h"
-#include "DSP_tools.h"
 #include "DSP_EffectsManager.h"
-#include "MonoProcessors/Volume.h"
 #include "DSP_Equalizer9Band.h"
-#include "DSP_SpectrumAnalyzer.h"
-#include "DSP_VisualAnalyzer.h"
 
 #include "utils/byteEncoder.h"
 #include "audio/fluxAudioBuffer.h"
@@ -62,12 +58,12 @@ namespace FluxRadio {
         std::deque<MetaEvent> mPendingStreamTitles;
 
 
-        DSP::MonoProcessors::Volume mVolProcessor;
         std::atomic<float>mVolume = 1.f;
 
 
         std::unique_ptr<DSP::EffectsManager> mEffectsManager = nullptr;
         void populateRack(DSP::EffectsRack* lRack);
+
 
     public:
         AudioHandler();
@@ -82,6 +78,7 @@ namespace FluxRadio {
 
         void RenderRack(int mode = 0);
         DSP::EffectsManager* getManager() const { return mEffectsManager.get();}
+
 
         float getVolume() {return mVolume.load(); }
         void setVolume(float value) {return mVolume.store(value); }
@@ -134,7 +131,7 @@ namespace FluxRadio {
         void Update(const double& dt, bool isConnected, bool visible);
 
     private:
-        static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
+        // static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
         static ma_result OnReadFromRawBuffer(ma_decoder* pDecoder, void* pBufferOut, size_t bytesToRead, size_t* pBytesRead);
         static ma_result OnSeekDummy(ma_decoder* pDecoder, ma_int64 byteOffset, ma_seek_origin origin);
 

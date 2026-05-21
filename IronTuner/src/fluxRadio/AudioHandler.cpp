@@ -11,7 +11,6 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-#include "dsp/MonoProcessors/Volume.h"
 #include <mutex>
 
 
@@ -30,6 +29,7 @@ namespace FluxRadio {
 
 
     }
+
     // -----------------------------------------------------------------------------
 //     void SDLCALL AudioHandler::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
 //         auto* self = static_cast<AudioHandler*>(userdata);
@@ -175,6 +175,7 @@ namespace FluxRadio {
             }
 
             // SDL_SetAudioStreamGetCallback(mStream, AudioHandler::audio_callback, this);
+
 
             #if defined(FLUX_ENGINE) && !defined(FLUX_ENGINE_FAKE)
             AudioManager.bindStream(mStream);
@@ -342,12 +343,9 @@ namespace FluxRadio {
     }
     // -----------------------------------------------------------------------------
     void AudioHandler::populateRack(DSP::EffectsRack* lRack){
+        // now i have the rack only have the 9band :P
         std::vector<DSP::EffectType> types = {
             DSP::EffectType::Equalizer9Band,
-            // DSP::EffectType::Limiter,
-            // high cpu usage!
-            DSP::EffectType::SpectrumAnalyzer,
-            DSP::EffectType::VisualAnalyzer,
         };
         for (auto type : types) {
             auto fx = DSP::EffectFactory::Create(type);
@@ -428,7 +426,8 @@ namespace FluxRadio {
 
 
 
-        int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.070f : 0.25f));
+        // int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.070f : 0.25f));
+        const int targetQueueSize = (int)( 44100 * 2 * sizeof(float) * 0.25f );
         if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
 
             size_t samplesNeeded =  targetQueueSize / sizeof(float);
@@ -437,7 +436,7 @@ namespace FluxRadio {
             static std::vector<float> pcmBuffer(samplesNeeded);
             if (samplesNeeded > pcmBuffer.size() ) pcmBuffer.resize(samplesNeeded);
 
-            //  ringbuffer :D
+            //  ringbuffer
             size_t samplesRead = self->mRingBuffer.pop(pcmBuffer.data(), samplesNeeded);
 
             if (samplesRead > 0) {
@@ -449,11 +448,9 @@ namespace FluxRadio {
                         pcmBuffer[i] = 0.f;
                         self->mFadeInSamplesProcessed++;
                     } else {
-                        pcmBuffer[i] = self->mVolProcessor.process(pcmBuffer[i], vol, false);
+                        pcmBuffer[i] *= vol;
                     }
-
                 }
-
                 if (self->mEffectsManager) {
                     self->mEffectsManager->process(pcmBuffer.data(), (int)samplesRead, channels);
                 }
