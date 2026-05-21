@@ -414,7 +414,7 @@ namespace FluxRadio {
         );
     }
     // -----------------------------------------------------------------------------
-    // 2026-05-21 push test
+    // 2026-05-21 push test - FIXME put in thead .. but not on the flappy laptop
     void AudioHandler::Update(const double& dt, bool isConnected) {
         auto* self = this;
         if ( !self->mStreamInfo || self->mDecoderPause) return;
