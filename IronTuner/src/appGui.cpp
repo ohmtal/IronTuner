@@ -2206,7 +2206,7 @@ namespace IronTuner {
              ImFlux::ShadowText( getMain()->mSettings.Caption, ImGui::ColorConvertFloat4ToU32(captionColor)) ;
              ImGui::PopFont();
              ImFlux::ShadowText( std::format("Version: {}",getMain()->mSettings.Version).c_str() );
-             ImFlux::ShadowText( std::format("(c)2026 Thomas Hühn /  {}",getMain()->mSettings.Company).c_str()  );
+             ImFlux::ShadowText( std::format("(c)2026 Thomas Hühn / {}",getMain()->mSettings.Company).c_str()  );
              ImGui::Spacing();
 
              // if ( getMain()->getAppSettings().CurrentStation.name != "" ) {
