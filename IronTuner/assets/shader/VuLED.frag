@@ -18,13 +18,20 @@ vec3 hsv2rgb(vec3 c) {
 }
 
 
+
+
 // ---------------------- HORIZONTAL BARS VERY SIMPLE -----------------------
 
 const float BAR_WIDTH = 0.4;
 const float BAR_HEIGHT = 0.04;
 const float BAR_GAP = 0.01;
-const float LED_COUNT = 30.0;
 const float LED_GAP = 0.15;
+#ifdef GL_ES
+const float LED_COUNT = 10.0;
+#else
+const float LED_COUNT = 30.0;
+#endif
+
 
 void main() {
     vec2 uv = gl_FragCoord.xy / u_res;
