@@ -428,7 +428,7 @@ namespace FluxRadio {
 
 
 
-        int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.05f : 0.25f));
+        int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.070f : 0.25f));
         if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
 
             size_t samplesNeeded =  targetQueueSize / sizeof(float);
