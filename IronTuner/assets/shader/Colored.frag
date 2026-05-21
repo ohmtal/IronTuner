@@ -10,6 +10,11 @@ uniform vec2 u_res;
 uniform float u_freqCount;
 uniform float u_freqs[32];
 
+#ifdef GL_ES
+const bool  IS_GLES   = true;
+#else
+const bool  IS_GLES   = false;
+#endif
 
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -29,7 +34,7 @@ void main() {
     finalColor = hsv2rgb(vec3(backHue, 0.7, 0.3 + rms * 0.3  ));
     //...........
 
-    if ( rms == 0.0 )
+    if ( rms == 0.0 && !IS_GLES)
     {
         // no signal ;)
         float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );

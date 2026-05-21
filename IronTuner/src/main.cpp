@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
     // if (isAndroidBuild()) SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
     // else SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, /*"8192"*/ /*"2048" */ "4096");
 
+    // did run well on arch/android/freebsd but then i tested on ubuntu ^^
     SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "2048");
 
 
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
     IronTuner::AppMain* app = new IronTuner::AppMain();
     app->mSettings.Company = "Ohmtal";
     app->mSettings.Caption = "Irön Tuner";
-    app->mSettings.Version = "0.260515";
+    app->mSettings.Version = "0.260520";
     app->mSettings.enableLogFile   = true;
     app->mSettings.WindowMaximized = false;
     app->mSettings.ScreenWidth  = 1152; // 1920;

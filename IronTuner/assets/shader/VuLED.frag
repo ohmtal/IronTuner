@@ -28,8 +28,10 @@ const float BAR_GAP = 0.01;
 const float LED_GAP = 0.15;
 #ifdef GL_ES
 const float LED_COUNT = 10.0;
+const bool  IS_GLES   = true;
 #else
 const float LED_COUNT = 30.0;
+const bool  IS_GLES   = false;
 #endif
 
 
@@ -46,8 +48,10 @@ void main() {
     if ( rms == 0.0 )
     {
         // no signal ;)
-        float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );
-        finalColor += noise * 0.2;
+        if (!IS_GLES) {
+            float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );
+            finalColor += noise * 0.2;
+        }
     } else  {
         float startX = (1.0 - BAR_WIDTH) * 0.5;
         float endX = startX + BAR_WIDTH;
