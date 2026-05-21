@@ -635,7 +635,7 @@ namespace IronTuner {
         } else {
             mAudioLevels = {0.f, 0.f};
         }
-        mAudioHandler->Update(dt, isConnected);
+        mAudioHandler->Update(dt, isConnected, gAppStatus.Visible);
 
 
 

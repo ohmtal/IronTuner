@@ -415,14 +415,20 @@ namespace FluxRadio {
     }
     // -----------------------------------------------------------------------------
     // 2026-05-21 push test - FIXME put in thead .. but not on the flappy laptop
-    void AudioHandler::Update(const double& dt, bool isConnected) {
+    void AudioHandler::Update(const double& dt, bool isConnected, bool visible) {
         auto* self = this;
-        if ( !self->mStreamInfo || self->mDecoderPause) return;
+        if ( !isConnected || !self->mStreamInfo || self->mDecoderPause) return;
 
         int channels = self->mStreamInfo->channels;
 
-        const float cacheSec = 0.050f; //was 0.1 => 100
-        const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
+        // less is better for visualizr!
+
+        // const float cacheSec = 0.05; //was 0.1 => 100, also 50 did work fine on desktop but failed on background android
+        // const int targetQueueSize = (int)(44100 * 2 * sizeof(float) * cacheSec);
+
+
+
+        int targetQueueSize = (int)(44100 * 2 * sizeof(float) * (visible ? 0.05f : 0.25f));
         if (SDL_GetAudioStreamQueued(mStream) < targetQueueSize) {
 
             size_t samplesNeeded =  targetQueueSize / sizeof(float);
