@@ -128,7 +128,7 @@ namespace FluxRadio {
 
         void decoderDebug( );
 
-        void Update(const double& dt, bool isConnected, bool visible);
+        void Update(const double& dt, const bool isConnected, const bool visible);
 
     private:
         // static void SDLCALL audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);
