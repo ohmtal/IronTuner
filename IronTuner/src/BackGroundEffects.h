@@ -111,16 +111,15 @@ namespace IronTuner {
         }
         //----------------------------------------------------------------------
         bool LoadShader(std::string fileName, bool enableScanLines = false) {
-            FluxFile textFile;
 
 
             std::string fragSrc = "";
             std::string vertSrc = "";
-            if (!textFile.LoadTextFile(mShaderPath+fileName, fragSrc)) {
+            if (!FluxFile::LoadTextFile(mShaderPath+fileName, fragSrc)) {
                 Log("[error] failed to load Fragment Shader!! %s", SDL_GetError());
                 return false;
             }
-            if (!textFile.LoadTextFile(mShaderPath+mVertShaderFile , vertSrc)) {
+            if (!FluxFile::LoadTextFile(mShaderPath+mVertShaderFile , vertSrc)) {
                 Log("[error] failed to load Fragment Shader!! %s", SDL_GetError());
                 return false;
             }
