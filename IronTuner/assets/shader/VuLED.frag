@@ -40,19 +40,26 @@ void main() {
 
     float rms = (u_rmsL + u_rmsR) * 0.5;
     vec3 finalColor = vec3(0.0);
-    //...........
-    float backHue = fract(u_time * 0.05);
-    finalColor = hsv2rgb(vec3(backHue, 0.7, 0.3 + rms * 0.3  ));
-    //...........
+
 
     if ( rms == 0.0 )
     {
-        // no signal ;)
-        if (!IS_GLES) {
-            float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );
-            finalColor += noise * 0.2;
-        }
+        // no signal ;) - optimized for gles
+        vec2 dynamicUV = uv + fract(u_time * 1.5);
+        float noise = fract(sin(dot(dynamicUV, vec2(32.9898, 78.233))) * 437.585453);
+        finalColor += noise * 0.2;
+
+        // pre:
+        // float noise = fract(sin(dot(uv, vec2(fract(u_time) + 0.10, 66.6))) *  43758.5453   );
+        // finalColor += noise * 0.2;
     } else  {
+
+        //........... background colors only when not silent
+        float backHue = fract(u_time * 0.05);
+        finalColor = hsv2rgb(vec3(backHue, 0.7, 0.3 + rms * 0.3  ));
+        //...........
+        // optimized VULed version without IF ...
+
         float startX = (1.0 - BAR_WIDTH) * 0.5;
         float endX = startX + BAR_WIDTH;
 
@@ -63,40 +70,84 @@ void main() {
         float bottomBarR = topBarR - BAR_HEIGHT;
 
 
-        if (uv.x >= startX && uv.x <= endX) {
+        float insideX = step(startX, uv.x) * step(uv.x, endX);
 
-            float progressX = (uv.x - startX) / BAR_WIDTH;
-            float ledIndex = floor(progressX * LED_COUNT) / LED_COUNT;
-            float ledFract = fract(progressX * LED_COUNT) ;
 
-            if (ledFract > LED_GAP) {
+        float progressX = (uv.x - startX) / BAR_WIDTH;
+        float ledIndex = floor(progressX * LED_COUNT) / LED_COUNT;
+        float ledFract = fract(progressX * LED_COUNT);
 
-                vec3 ledColor = vec3(0.0);
-                if (ledIndex < 0.6) {
-                    ledColor = vec3(0.0, 0.8, 0.0);
-                } else if (ledIndex < 0.85) {
-                    ledColor = vec3(0.8, 0.8, 0.0);
-                } else {
-                    ledColor = vec3(0.8, 0.0, 0.0);
-                }
 
-                if (uv.y >= bottomBarL && uv.y <= topBarL) {
-                    if (ledIndex <= u_rmsL) {
-                        finalColor = ledColor, finalColor;
-                    } else {
-                        finalColor = ledColor * 0.2;
-                    }
-                }
+        float insideLED = step(LED_GAP, ledFract);
 
-                if (uv.y >= bottomBarR && uv.y <= topBarR) {
-                    if (ledIndex <= u_rmsR) {
-                        finalColor = ledColor;
-                    } else {
-                        finalColor = ledColor * 0.2;
-                    }
-                }
-            }
-        }
+
+        float isYellow = step(0.60, ledIndex);
+        float isRed    = step(0.85, ledIndex);
+
+        vec3 ledColor = mix(vec3(0.0, 0.8, 0.0), vec3(0.8, 0.8, 0.0), isYellow);
+        ledColor      = mix(ledColor,            vec3(0.8, 0.0, 0.0), isRed);
+
+
+        float insideBarL = step(bottomBarL, uv.y) * step(uv.y, topBarL);
+        float insideBarR = step(bottomBarR, uv.y) * step(uv.y, topBarR);
+
+
+        float intensityL = mix(0.2, 1.0, step(ledIndex, u_rmsL));
+        float intensityR = mix(0.2, 1.0, step(ledIndex, u_rmsR));
+
+
+        vec3 colorL = ledColor * intensityL * insideBarL;
+        vec3 colorR = ledColor * intensityR * insideBarR;
+
+
+        float anyBarActive = insideX * insideLED * (insideBarL + insideBarR);
+        finalColor = mix(finalColor, colorL + colorR, anyBarActive);
+
+
+//         float startX = (1.0 - BAR_WIDTH) * 0.5;
+//         float endX = startX + BAR_WIDTH;
+//
+//         float centerY = 0.1;
+//         float bottomBarL = centerY + (BAR_GAP * 0.5);
+//         float topBarL = bottomBarL + BAR_HEIGHT;
+//         float topBarR = centerY - (BAR_GAP * 0.5);
+//         float bottomBarR = topBarR - BAR_HEIGHT;
+//
+//
+//         if (uv.x >= startX && uv.x <= endX) {
+//
+//             float progressX = (uv.x - startX) / BAR_WIDTH;
+//             float ledIndex = floor(progressX * LED_COUNT) / LED_COUNT;
+//             float ledFract = fract(progressX * LED_COUNT) ;
+//
+//             if (ledFract > LED_GAP) {
+//
+//                 vec3 ledColor = vec3(0.0);
+//                 if (ledIndex < 0.6) {
+//                     ledColor = vec3(0.0, 0.8, 0.0);
+//                 } else if (ledIndex < 0.85) {
+//                     ledColor = vec3(0.8, 0.8, 0.0);
+//                 } else {
+//                     ledColor = vec3(0.8, 0.0, 0.0);
+//                 }
+//
+//                 if (uv.y >= bottomBarL && uv.y <= topBarL) {
+//                     if (ledIndex <= u_rmsL) {
+//                         finalColor = ledColor, finalColor;
+//                     } else {
+//                         finalColor = ledColor * 0.2;
+//                     }
+//                 }
+//
+//                 if (uv.y >= bottomBarR && uv.y <= topBarR) {
+//                     if (ledIndex <= u_rmsR) {
+//                         finalColor = ledColor;
+//                     } else {
+//                         finalColor = ledColor * 0.2;
+//                     }
+//                 }
+//             }
+//         }
     }
 
 
