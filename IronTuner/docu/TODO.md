@@ -1,32 +1,28 @@
-
 ## Todos
 
-- [ ] AudioHandler 
-    - [ ] switch to push
-    - [ ] visual data: add postmix 
+---
+### Version 1.x
 
-- [ ] RadioBrowser
-    - [ ] redesign search with a big input switching then to list 
-        - [ ] most popular by tag 
-- [X] tune => mark current 
+- [ ] Finish 1.x
+    - [ ] Nice Readme
+    - [ ] Releases:
+        - [ ] Windows
+        - [ ] Linux
+        - [ ] Android
+
+- [ ]  in Menu
+    - [ ] Buttons Play/Stop, Pause, Fast Forward, Next Title
+        - [ ] add font for buttons
+    - [ ] RadioBrowser search with a big input switching then to list
+
+- [~] AudioHandler NOTE i had that and rolled back !
+    - [~] switch to push
+    - [~] visual data: add postmix
 
 - [X] scheduled reconnect on error 56 (network gone / android wlan)
-- [ ] notifies android 
-    - [ ] offline update 
-    - [ ] close notify on terminated 
-    - [ ] only when in background ?! 
-    - [ ] ...
 
-- [ ] Fileformats:
-    - [ ] OGG via stb_vorbis and miniaudio : 
-    ```
-        #define MA_HAS_VORBIS
-        #include "stb_vorbis.c"
-        #include "miniaudio.h"
-    ```
-    - [ ] flac directly supported by miniaudio. Test stations: https://www.hiresaudio.online/hires-internet-radio/
-    - [NOT] ⚡ aac is problematic since i have to use ffmpeg decoder 
-    
+- [X] tune => mark current
+
 - Buffer experiments:
     - [X] add pause - fill up buffer
     - [X] add "continue playing on disconnect" << until buffer is empty of cause ;)
@@ -188,7 +184,24 @@
 
 ---
 
-# NEXT VERSION:
+
+
+- [ ] notifies android
+    - [ ] offline update
+    - [ ] close notify on terminated
+    - [ ] only when in background ?!
+    - [ ] ...
+
+- [ ] Fileformats:
+    - [ ] OGG via stb_vorbis and miniaudio :
+    ```
+        #define MA_HAS_VORBIS
+        #include "stb_vorbis.c"
+        #include "miniaudio.h"
+    ```
+    - [ ] flac directly supported by miniaudio. Test stations: https://www.hiresaudio.online/hires-internet-radio/
+    - [NOT] ⚡ aac is problematic since i have to use ffmpeg decoder
+
 
 - [ ] Android: Bluetooth send Songdata to player << MediaSession API
 
@@ -294,10 +307,11 @@ mTexture.setManual(glFontTexId, w, h);
 
 
     - [ ] radio-browser.info
+        - [ ] most popular by tag Search in list
         - [ ] search by highest click count and tag 
-        - [ ] SRV DNS lookup - _api._tcp.radio-browser.info
-        - [ ] Update Favo on  "Click Responce" / RequestType::CLICK - if stationuuid is set
-        - [ ] add favicon support 
+        - [?] SRV DNS lookup - _api._tcp.radio-browser.info << changed URL maybe SRV not longer needed
+        - [X] Update Favo on  "Click Responce" / RequestType::CLICK - if stationuuid is set
+        - [~] add favicon support
     
             
     - Finishing
