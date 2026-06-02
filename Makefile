@@ -11,7 +11,10 @@ EMSCRIPTEN_TOOLCHAIN := /usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cm
 # Android config:
 # Your assets must be in subdirectory assets!
 #TODO: Change the path /opt/android to where you installed android studio !
-NDK_DIRS := $(wildcard /opt/android/sdk/ndk/*/)
+# NDK_DIRS := $(wildcard /opt/android/sdk/ndk/*/)
+NDK_DIRS := $(wildcard $ANDROID_SDK_ROOT/ndk/*/)
+
+
 ANDROID_PROJ_DIR := android
 ANDROID_NDK_HOME := $(lastword $(sort $(NDK_DIRS)))
 # ANDROID_NDK_HOME := $(shell @ls -d /opt/android/sdk/ndk/*/ | sort -V | tail -n 1)
@@ -61,10 +64,12 @@ info:
 	@echo "Nativ:      sudo pacman -S sdl3 glew opengl-headers"
 	@echo "Windows:    yay -S mingw-w64-sdl3 mingw-w64-glew"
 	@echo "Android:    download and install Android Studio and set the pathes like:"
+	@echo "            NOTE: you need to install NDK(side by side) and CMake in Android Studio"
+	@echo "            NOTE: use the path you installed SDK in the following lines:"
 	@echo "            export ANDROID_HOME=/opt/android/sdk"
 	@echo "            export ANDROID_SDK_ROOT=/opt/android/sdk"
-	@echo "            export ANDROID_NDK_HOME=/opt/android/sdk/ndk/28.2.13676358  # Update version if different"
 	@echo "            export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
+	@echo "            export JAVA_HOME=/opt/android-studio/jbr/"
 	@echo "            sudo pacman -S gradle"
 	@echo "Emscripten: sudo pacman -S emscripten"
 	@echo "            testing @bash:"
@@ -185,6 +190,8 @@ android:
 	@echo "adb logcat '*:F' | grep -Ei SDL|libmain|DEBUG"
 	@echo "Check content example:"
 	@echo "unzip -l ./_build/apks/IronTuner.apk"
+	@echo "Check running on adb shell:"
+	@echo "top -d 1 | grep com.ohmtal.irontuner |grep -v grep"
 	@echo "---------------------------------------------------------------------------------"
 
 # -----------------  W E B  --------------------
