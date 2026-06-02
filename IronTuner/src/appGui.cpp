@@ -181,7 +181,8 @@ namespace IronTuner {
     // -----------------------------------------------------------------------------
     void AppGui::Disconnect(){
         mStreamHandler->stop();
-        mAudioHandler->reset();
+        // is be done on Disconnect!  The buffers are filled after reset, if i call it here!
+        // mAudioHandler->reset();
     }
     // -----------------------------------------------------------------------------
     bool AppGui::ConnectCurrent() {
@@ -1674,7 +1675,7 @@ namespace IronTuner {
 
             if (mAudioRecorder.get()) mAudioRecorder->closeFile();
             mRecording = false;
-            Log("[info] Stream disconncted.");
+            Log("[info] Stream disconnected.");
         };
 
         mAudioHandler->OnTitleTrigger = [&]() {
