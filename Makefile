@@ -177,14 +177,14 @@ android:
 	@echo "change the Manifest,gradle, the res/icon and so on."
 	@echo "---------------------------------------------------------------------------------"
 	@echo "# 1. Install it to your phone example:"
-	@echo "    adb install -r ./_build/apks/FishTankDemo.apk"
+	@echo "    adb install -r ./_build/apks/IronTuner.apk"
 	@echo "# 2. Launch it"
 	@echo "# (Assuming your package name in the template was org.libsdl.app)"
 	@echo "# adb shell am start -n org.libsdl.app/org.libsdl.app.SDLActivity"
 	@echo "DEBUG WITH:"
 	@echo "adb logcat '*:F' | grep -Ei SDL|libmain|DEBUG"
 	@echo "Check content example:"
-	@echo "unzip -l ./_build/apks/FishTankDemo.apk"
+	@echo "unzip -l ./_build/apks/IronTuner.apk"
 	@echo "---------------------------------------------------------------------------------"
 
 # -----------------  W E B  --------------------

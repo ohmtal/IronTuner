@@ -3,7 +3,6 @@ package com.ohmtal.irontuner;
 import android.content.Intent;
 import androidx.core.content.ContextCompat;
 import org.libsdl.app.SDLActivity;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
@@ -25,6 +24,16 @@ public class IronTunerActivity extends SDLActivity {
         }
     }
 
+    // // really quit app on wipe close
+    // @Override
+    // public void onTaskRemoved(Intent rootIntent) {
+    //     stopSdlForegroundService();
+    //     super.onTaskRemoved(rootIntent);
+    //     android.os.Process.killProcess(android.os.Process.myPid());
+    //     System.exit(0);
+    // }
+
+
     public void updateNotificationFromCpp(String text) {
         Intent intent = new Intent(this, IronTunerService.class);
         intent.putExtra("update_text", text);
@@ -36,6 +45,11 @@ public class IronTunerActivity extends SDLActivity {
     public void startSdlForegroundService() {
         Intent serviceIntent = new Intent(this, IronTunerService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    public void stopSdlForegroundService() {
+        Intent serviceIntent = new Intent(this, IronTunerService.class);
+        stopService(serviceIntent);
     }
 
 }

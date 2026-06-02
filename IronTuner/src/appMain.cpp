@@ -5,6 +5,12 @@
 // APP Main
 //------------------------------------------------------------------------------
 #include "appMain.h"
+
+
+#if defined(__ANDROID__)
+#include <unistd.h> // _exit();
+#endif
+
 namespace IronTuner {
 
     //--------------------------------------------------------------------------
@@ -27,6 +33,21 @@ namespace IronTuner {
         }
 
         return true;
+    }
+    //--------------------------------------------------------------------------
+    void AppMain::TerminateApplication(void)
+    {
+
+    #if defined(__ANDROID__)
+        Deinitialize();
+        _exit(0); //on android we quit  hart!
+    #else
+        static SDL_Event Q;
+        Q.type = SDL_EVENT_QUIT;
+        if(!SDL_PushEvent(&Q)) exit(1);
+    #endif
+
+        return;
     }
     //--------------------------------------------------------------------------
     void AppMain::Deinitialize()

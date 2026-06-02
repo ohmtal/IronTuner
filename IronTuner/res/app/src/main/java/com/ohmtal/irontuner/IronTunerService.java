@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Process;
 import androidx.core.app.NotificationCompat;
 
 
@@ -76,6 +77,24 @@ public class IronTunerService extends Service {
     }
     //--------------------------------------------------------------------------
     @Override public IBinder onBind(Intent intent) { return null; }
+
+
+    //--------------------------------------------------------------------------
+    // lets really quit the app ....
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+        } else {
+            stopForeground(true);
+        }
+        stopSelf();
+        super.onTaskRemoved(rootIntent);
+
+        Process.killProcess(Process.myPid());
+        System.exit(0);
+    }
+
 }
 
 

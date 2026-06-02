@@ -37,6 +37,7 @@ namespace IronTuner {
 
         AppMain() {}
         ~AppMain() {}
+        void TerminateApplication(void) override;
 
 
 

@@ -279,6 +279,7 @@ namespace FluxRadio {
         }
         mRawBuffer.clear();
         mRingBuffer.clear();
+        dLog("[error] AudioHandler::reset --------- buffer cleared !!!! ........................");
 
         mDecoderInitialized.store(false);
         if (mStream) {
@@ -292,8 +293,6 @@ namespace FluxRadio {
         mPendingStreamTitles.clear();
         mCurrentTitle = "";
         mDecoderPause.store(false);
-
-
     }
     // -----------------------------------------------------------------------------
     void AudioHandler::onDisConnected ( ){

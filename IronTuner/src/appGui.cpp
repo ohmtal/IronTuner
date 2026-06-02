@@ -114,8 +114,12 @@ namespace IronTuner {
                 Log("[info] IronTuner WILL ENTER BACKGROUND...");
 
 
-                if (getMain()->getAppSettings().disconnectOnBackground) {
-                    appGui->Disconnect();
+                if (getMain()->getAppSettings().disconnectOnBackground
+                    || !appGui->isStreamConnected())
+                {
+                    // 0.260602 i better quit here also if not connected
+                    // appGui->Disconnect();
+                    getMain()->TerminateApplication();
                 }
                 else  {
                     triggerJavaService();
@@ -198,7 +202,7 @@ namespace IronTuner {
         // dLog("Connect Current: protocol: %s, url: %s",parts.protocol.c_str(), url.c_str() );
 
 
-        mAudioHandler->reset();
+        // mAudioHandler->reset();
         mStreamHandler->Execute(url);
         //moved to Tune if (!getMain()->getAppSettings().CurrentStation.stationuuid.empty()) mRadioBrowser->clickStation(getMain()->getAppSettings().CurrentStation.stationuuid);
         return true;
@@ -1637,6 +1641,13 @@ namespace IronTuner {
                 mGuiGlue->showMessage("Stream Errror "+std::to_string(errorCode), errorMsg);
                 updateAndroidNotification("offline Error:" + errorMsg );
                 mReconnectOnTimeOutCount = 0;
+
+                //FIXME is android ....
+                if (isAndroidBuild() && !gAppStatus.Visible) {
+                    Log("[warn] %s", "Quit App save resources we are not longer connected!");
+                    getMain()->TerminateApplication();
+                }
+
             }
         };
 

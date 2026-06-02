@@ -149,7 +149,7 @@ namespace IronTuner {
         void changePage(int step);
         std::string getChangePageName(int step);
         void handleSwipe(float deltaX);
-        void onEvent(SDL_Event event);
+        void onEvent(SDL_Event event) override;
 
         void Update(const double& dt) override;
         // void DrawMsgBoxPopup();
