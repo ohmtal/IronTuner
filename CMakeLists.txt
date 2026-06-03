@@ -39,7 +39,7 @@ option(BUILD_IRONTUNER "Build IronTuner" ON)
 #  FIXME enable internet on : android/app/src/main/AndroidManifest.xml
 
 
-if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
+if(BUILD_IRONTUNER #[[AND NOT EMSCRIPTEN]])
     set(IRONTUNER_DIR "${CMAKE_CURRENT_LIST_DIR}/IronTuner")
 
    if(MSVC)
@@ -129,6 +129,18 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
 		)
 		FetchContent_MakeAvailable(curl)
 
+        if(EMSCRIPTEN)
+            # 1. Das tatsächliche statische Library-Target von Curl anpassen
+            if(TARGET libcurl_static)
+                target_compile_options(libcurl_static PRIVATE "-pthread")
+            endif()
+
+            # 2. Die interne Object-Library anpassen, aus der curl gebaut wird
+            if(TARGET libcurl_object)
+                target_compile_options(libcurl_object PRIVATE "-pthread")
+            endif()
+        endif()
+
     if (ANDROID)
         # if(TARGET libcurl_static)
         #     target_link_libraries(libcurl_static PRIVATE ssl crypto)
@@ -200,6 +212,7 @@ if(BUILD_IRONTUNER AND NOT EMSCRIPTEN)
         # target_link_options(IronTuner PRIVATE "/MANIFESTINPUT:${IRONTUNER_DIR}/res/app.manifest")
         # target_sources(IronTuner PRIVATE "${IRONTUNER_DIR}/res/app.manifest")
     endif()
+
 
 
 elseif(BUILD_IRONTUNER)
