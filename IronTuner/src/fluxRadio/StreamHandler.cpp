@@ -196,7 +196,7 @@ namespace FluxRadio {
         mCurrentMetaSize = 0;
 
         mTotalAudioBytesSent = 0;
-        mCurlHandle = nullptr;
+        //LOL! cant cleanup when it's nullptr!!! << mCurlHandle = nullptr;
 
     }
     //--------------------------------------------------------------------------

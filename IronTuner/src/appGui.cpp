@@ -189,6 +189,7 @@ namespace IronTuner {
         if (!FluxNet::NetTools::isValidURL(getMain()->getAppSettings().CurrentStation.url) ) {
             return false;
         }
+
         std::string url = getMain()->getAppSettings().CurrentStation.url;
         FluxNet::NetTools::URLParts parts = FluxNet::NetTools::parseURL(url);
 
