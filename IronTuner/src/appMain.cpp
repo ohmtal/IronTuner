@@ -144,6 +144,8 @@ namespace IronTuner {
         getAppSettings().BackGroundRenderId = id;
         if (id >= 0) {
             reloadBackGroundEffectsShader( id, enableScanLines );
+        } else {
+            if (mBackGroundEffects) mBackGroundEffects->UnloadShader();
         }
     }
     // -------------------------------------------------------------------------

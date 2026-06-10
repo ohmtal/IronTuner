@@ -112,6 +112,12 @@ namespace IronTuner {
             return LoadShader(mFragShaders[fragShaderId].fileName, enableScanLines);
         }
         //----------------------------------------------------------------------
+        void UnloadShader() {
+            if (!mShader) return;
+            SAFE_DELETE(mShader);
+            mShader = nullptr;
+        }
+        //----------------------------------------------------------------------
         bool LoadShader(std::string fileName, bool enableScanLines = false) {
 
 
@@ -134,10 +140,12 @@ namespace IronTuner {
                 vertSrc = "#version 330 core\n" + vertSrc;
             }
 
-            if (!mShader) mShader = new FluxShader();
+            UnloadShader();
+
+            mShader = new FluxShader();
             if (!mShader->load(vertSrc.c_str(), fragSrc.c_str())) {
                 Log("[error] failed to compile Shaders %s!!", fileName.c_str());
-                SAFE_DELETE(mShader);
+                UnloadShader();
                 return false;
             }
 
@@ -182,7 +190,7 @@ namespace IronTuner {
 
             if (mVAO) glDeleteVertexArrays(1, &mVAO);
             if (mVBO) glDeleteBuffers(1, &mVBO);
-            SAFE_DELETE(mShader);
+            UnloadShader();
         }
         //----------------------------------------------------------------------
         void UpdateLevels(const double& dt, const Point2F audioLevels, const bool isConnected)  {
