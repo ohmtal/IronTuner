@@ -80,6 +80,10 @@ namespace FluxRadio {
     // -----------------------------------------------------------------------------
     bool AudioHandler::init(StreamInfo* info) {
 
+        if (mShuttingDown) {
+            return false;
+        }
+
         if (!info) {
             Log("[error] init StreamInfo in NULL!!");
             return false;
@@ -160,6 +164,7 @@ namespace FluxRadio {
         if (needsNewSDLStream && result == MA_SUCCESS) {
 
             if (mStream) {
+                AudioManager.unBindStream(mStream);
                 SDL_DestroyAudioStream(mStream);
                 mStream = nullptr;
             }
@@ -204,9 +209,24 @@ namespace FluxRadio {
         return true;
     }
     // -----------------------------------------------------------------------------
+    void AudioHandler::shutDown() {
+
+        mShuttingDown = true;
+        if (mStream != nullptr) {
+            #if defined(FLUX_ENGINE) && !defined(FLUX_ENGINE_FAKE)
+            AudioManager.unBindStream(mStream);
+            #else
+            //FIXME cleanup
+            #endif
+            SDL_DestroyAudioStream(mStream);
+            mStream = nullptr;
+        }
+    }
+
+    // -----------------------------------------------------------------------------
     void AudioHandler::OnAudioChunk(const void* buffer, size_t size) {
 
-        if (mRawBuffer.size() > mRawBufferLimit)  {
+        if (mRawBuffer.size() > mRawBufferLimit || mShuttingDown)  {
             return; //i simply return !
         }
 
@@ -477,6 +497,8 @@ namespace FluxRadio {
 
     }
     // -----------------------------------------------------------------------------
+
+
 
 }; //namespace
 

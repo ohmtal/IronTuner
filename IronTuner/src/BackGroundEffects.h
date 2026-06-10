@@ -134,9 +134,10 @@ namespace IronTuner {
                 vertSrc = "#version 330 core\n" + vertSrc;
             }
 
-            mShader = new FluxShader();
+            if (!mShader) mShader = new FluxShader();
             if (!mShader->load(vertSrc.c_str(), fragSrc.c_str())) {
                 Log("[error] failed to compile Shaders %s!!", fileName.c_str());
+                SAFE_DELETE(mShader);
                 return false;
             }
 

@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 #include "utils/errorlog.h"
 #include "StreamInfo.h"
+#include "net/CurlGlue.h"
 
 #include <iostream>
 #include <string>
@@ -90,7 +91,7 @@ namespace FluxRadio {
                 mStopRequested.store(true);
                 mThread.join();
             }
-
+             FluxNet::shutdownCurl();
         }
 
         void stop() {

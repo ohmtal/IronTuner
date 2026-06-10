@@ -1552,6 +1552,7 @@ namespace IronTuner {
         SDL_RemoveEventWatch(EventWatcher, this);
         SDL_SetLogOutputFunction(nullptr, nullptr); // log must be unlinked first!!
         SAFE_DELETE(mVirtualKeyBoard);
+        mStreamHandler->OnAudioChunk = nullptr;
         mStreamHandler->shutdown();
         mAudioHandler->reset();
         if (mAudioHandler.get()) mAudioHandler->shutDown();

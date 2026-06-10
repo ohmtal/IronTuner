@@ -64,6 +64,7 @@ namespace FluxRadio {
         std::unique_ptr<DSP::EffectsManager> mEffectsManager = nullptr;
         void populateRack(DSP::EffectsRack* lRack);
 
+        bool mShuttingDown = false;
 
 
     public:
@@ -74,6 +75,8 @@ namespace FluxRadio {
             if (mDecoderThread.joinable()) {
                 mDecoderThread.join();
             }
+            SAFE_DELETE(mDecoder);
+            mDecoder = nullptr;
 
         }
 
@@ -98,9 +101,7 @@ namespace FluxRadio {
         std::string getNextTitle() const;
 
         bool init(StreamInfo* info);
-        void shutDown() {
-
-        }
+        void shutDown();
 
         void OnStreamTitleUpdate(const std::string streamTitle, const size_t streamPosition);
         void OnAudioChunk(const void* buffer, const size_t size);
