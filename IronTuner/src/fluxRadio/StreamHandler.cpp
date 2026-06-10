@@ -226,11 +226,11 @@ namespace FluxRadio {
 
             CURLcode res;
             mCurlHandle = curl_easy_init();
-            CURLSH* shareHandle = curl_share_init(); //NOTE: new
-            if(mCurlHandle && shareHandle) {
+            // CURLSH* shareHandle = curl_share_init(); //NOTE: new
+            if(mCurlHandle /*&& shareHandle*/) {
                 //NOTE new:
-                curl_share_setopt(shareHandle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
-                curl_easy_setopt(mCurlHandle, CURLOPT_SHARE, shareHandle);
+                // curl_share_setopt(shareHandle, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
+                // curl_easy_setopt(mCurlHandle, CURLOPT_SHARE, shareHandle);
                 // ---
 
                 curl_easy_setopt(mCurlHandle, CURLOPT_URL, mUrl.c_str());
@@ -270,8 +270,7 @@ namespace FluxRadio {
                 // curl_easy_setopt(mCurlHandle, CURLOPT_DNS_USE_GLOBAL_CACHE, 0L);
                 // <<<<<
 
-                // NOTE still leak a lot of small byte chunks ,
-                //      when connect to other station
+
                 res = curl_easy_perform(mCurlHandle);
 
                 if(res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK) {
@@ -281,9 +280,9 @@ namespace FluxRadio {
                 curl_easy_cleanup(mCurlHandle);
                 mCurlHandle = nullptr;
             }
-            if (shareHandle) { //NOTE new:
-                curl_share_cleanup(shareHandle);
-            }
+            // if (shareHandle) { //NOTE new:
+            //     curl_share_cleanup(shareHandle);
+            // }
             if (headers) {
                 curl_slist_free_all(headers);
                 headers = nullptr;
