@@ -187,7 +187,7 @@ namespace FluxRadio {
 
 
             #if defined(FLUX_ENGINE) && !defined(FLUX_ENGINE_FAKE)
-            AudioManager.bindStream(mStream);
+            AudioManager.bindStream(mStream, true);
             #else
             SDL_AudioDeviceID dev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
