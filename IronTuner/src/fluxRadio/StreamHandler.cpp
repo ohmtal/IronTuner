@@ -204,17 +204,16 @@ namespace FluxRadio {
         if (mRunning.load()) {
             Log("Request is running - stop first ! ");
         }
-        reset();
+
 
         if (mThread.joinable()) {
             mStopRequested.store(true);
             mThread.join();
         }
+
+        reset(); //reset after stop request
         if (!url.empty()) mUrl = url; //overwrite by parameter
-
         mStreamInfo.streamUrl = url;
-
-
         mStopRequested.store(false);
         FluxNet::initCurl();
 
